@@ -21,6 +21,7 @@
 
 #include "MathHelper.h"
 #include "d3dx12.h"
+#include "d3dUtil.h"
 
 #include "ADefine.h"
 #include "Singleton.h"

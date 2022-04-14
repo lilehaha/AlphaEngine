@@ -43,7 +43,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		return 0;
 	case WM_GETMINMAXINFO:
-		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 100;
+		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
 		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 100;
 		return 0;
 	default:
@@ -57,7 +57,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 #endif
 
-AWindowWin32::AWindowWin32(UINT Width, UINT Height, const std::string& Name, void* HWnd) : AWindow(Width, Height), mHWnd((HWND)HWnd)
+AWindowWin32::AWindowWin32(UINT Width, UINT Height, const std::string& Name, void* HWnd) : AWindow(Width, Height)
 {
 	InstantiateWindow(Name);
 	mWndWin32 = this;
@@ -72,10 +72,11 @@ bool AWindowWin32::Run()
 {
 	MSG msg = { 0 };
 	bool isQuit = false;
-	while (PeekMessage(&msg,0,0,0,PM_REMOVE))
+	while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
+
 		if (msg.message == WM_QUIT)
 		{
 			isQuit = true;

@@ -31,6 +31,12 @@
     <Filter Include="Source Files\RHI">
       <UniqueIdentifier>{cddb755b-d50c-4393-b0bc-b06e1d341aa1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Render">
+      <UniqueIdentifier>{baa30145-ac9f-42a1-a0f2-9846e0d6dffb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render">
+      <UniqueIdentifier>{087d9a33-9d8d-4a09-9ff6-bd072bee6888}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -63,6 +69,15 @@
     <ClInclude Include="Singleton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ARHIDX12.h">
+      <Filter>Header Files\RHI</Filter>
+    </ClInclude>
+    <ClInclude Include="ARender.h">
+      <Filter>Header Files\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="RHIBuilder.h">
+      <Filter>Header Files\RHI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AlphaEngine.rc">
@@ -90,6 +105,15 @@
     </ClCompile>
     <ClCompile Include="AEngine.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ARHIDX12.cpp">
+      <Filter>Source Files\RHI</Filter>
+    </ClCompile>
+    <ClCompile Include="ARender.cpp">
+      <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="RHIBuilder.cpp">
+      <Filter>Source Files\RHI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

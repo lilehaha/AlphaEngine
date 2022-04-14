@@ -142,12 +142,15 @@
   <ItemGroup>
     <ClInclude Include="ADefine.h" />
     <ClInclude Include="AEngine.h" />
+    <ClInclude Include="ARender.h" />
     <ClInclude Include="ARHI.h" />
+    <ClInclude Include="ARHIDX12.h" />
     <ClInclude Include="d3dUtil.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="AWindow.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="RHIBuilder.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
@@ -156,11 +159,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AEngine.cpp" />
+    <ClCompile Include="ARender.cpp" />
     <ClCompile Include="ARHI.cpp" />
+    <ClCompile Include="ARHIDX12.cpp" />
     <ClCompile Include="d3dUtil.cpp" />
     <ClCompile Include="AWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathHelper.cpp" />
+    <ClCompile Include="RHIBuilder.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

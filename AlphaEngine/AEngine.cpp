@@ -5,16 +5,6 @@ namespace Alpha
 {
 	AEngine::AEngine()
 	{
-
-	}
-
-	AEngine::~AEngine()
-	{
-
-	}
-
-	void Alpha::AEngine::Init()
-	{
 #ifdef PlatformWindows
 		mCurPlatform = EPlatform::Windows;
 #elif defined(PlatformIOS)
@@ -22,8 +12,57 @@ namespace Alpha
 #elif defined(PlatformAndroid)
 		PCurrentPlatform = EPlatform::Android;
 #endif
-		AWindow* mAWindow = AWindow::InitWindow(1920, 1080, "AlphaEngine");
+	}
+
+	AEngine::~AEngine()
+	{
+
+	}
+
+	bool AEngine::Init()
+	{
+		mWindow = AWindow::InitWindow(1080, 720, "AlphaEngine");
+		if (!mWindow)
+		{
+			return false;
+		}
+		mRender = std::make_unique<ARender>();
+		if (!mRender->Init())
+		{
+			return false;
+		}
+		return true;
+	}
+
+	void AEngine::Tick()
+	{
+		mRender->Render();
+
+		/*	BeginFrame();
+			EndFrame();*/
+	}
+
+	void AEngine::BeginFrame()
+	{
 		
 	}
 
+	void AEngine::EndFrame()
+	{
+
+	}
+
+	AWindow* AEngine::GetWindow()
+	{
+		return mWindow;
+	}
+
+	void Alpha::AEngine::Start()
+	{
+		IsRunning = true;
+		while (IsRunning && mWindow->Run())
+		{
+			Tick();
+		}
+	}
 }

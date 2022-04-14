@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "AWindow.h"
+#include "ARender.h"
 
 namespace Alpha
 {
@@ -17,10 +18,19 @@ namespace Alpha
 		AEngine();
 		~AEngine();
 
-		void Init();
+		bool Init();
+		void Start();
+		void Tick();
 
+		void BeginFrame();
+		void EndFrame();
+
+		AWindow* GetWindow();
 	private:
-		std::shared_ptr<AWindow> mAWindow;
+		AWindow* mWindow;
+		std::unique_ptr<ARender> mRender;
+	
+		bool IsRunning;
 		EPlatform mCurPlatform;
 	};
 }

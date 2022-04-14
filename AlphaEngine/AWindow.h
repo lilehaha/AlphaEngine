@@ -10,14 +10,15 @@ public:
 	virtual bool Run() = 0;
 	virtual UINT GetWidth() { return mWidth; }
 	virtual UINT GetHeight() { return mHeight; }
+	inline HWND GetHWND() { return mHWnd; }
 protected:
-	//AWindow() = default;
 	AWindow(UINT Width, UINT Height);
 	virtual ~AWindow();
 
 protected:
 	UINT mWidth;
 	UINT mHeight;
+	HWND mHWnd;
 };
 
 #ifdef PlatformWindows
@@ -29,9 +30,6 @@ public:
 	virtual bool Run();
 
 	void InstantiateWindow(const std::string& Name);
-	inline HWND GetHWND() { return mHWnd; }
-protected:
-	HWND mHWnd;
 };
 
 
