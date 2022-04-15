@@ -25,9 +25,11 @@ namespace Alpha
 		void BeginFrame();
 		void EndFrame();
 
-		AWindow* GetWindow();
+		std::shared_ptr<AWindow> GetWindow();
+		EPlatform GetCurrentPlatform();
+
 	private:
-		AWindow* mWindow;
+		std::shared_ptr<AWindow> mWindow;
 		std::unique_ptr<ARender> mRender;
 		AGameTimer mTimer;
 		std::wstring mEngineName;

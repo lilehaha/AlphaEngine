@@ -2,16 +2,6 @@
 #include "RHIBuilder.h"
 #include "ARHIDX12.h"
 
-RHIBuilder::RHIBuilder()
-{
-
-}
-
-RHIBuilder::~RHIBuilder()
-{
-
-}
-
 std::shared_ptr<ARHI> RHIBuilder::CreateRHI()
 {
 #ifdef PlatformWindows

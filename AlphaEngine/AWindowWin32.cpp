@@ -1,33 +1,5 @@
 #include "stdafx.h"
-#include "AWindow.h"
-
-AWindow* AWindow::InitWindow(UINT Width, UINT Height,const std::wstring& Name)
-{
-	AWindow* mWindow = nullptr;
-#ifdef PlatformWindows
-	mWindow = new AWindowWin32(Width, Height, Name, nullptr);
-#elif defined(PlatformIOS)
-	mWindow = new AWindowIOS();
-#elif defined(PlatformAndroid)
-	mWindow = new AWindowAndroid();
-#endif
-	return mWindow;
-}
-
-void AWindow::DestoryWindow(AWindow* Window)
-{
-	ReleasePtr(Window);
-}
-
-AWindow::AWindow(UINT Width, UINT Height) : mWidth(Width), mHeight(Height)
-{
-
-}
-
-AWindow::~AWindow()
-{
-
-}
+#include "AWindowWin32.h"
 
 #ifdef PlatformWindows
 static AWindowWin32* mWndWin32 = nullptr;
@@ -57,9 +29,8 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 #endif
 
-AWindowWin32::AWindowWin32(UINT Width, UINT Height, const std::wstring& Name, void* HWnd) : AWindow(Width, Height)
+AWindowWin32::AWindowWin32()
 {
-	InstantiateWindow(Name);
 	mWndWin32 = this;
 }
 
@@ -85,7 +56,22 @@ bool AWindowWin32::Run()
 	return !isQuit;
 }
 
-void AWindowWin32::InstantiateWindow(const std::wstring& Name)
+UINT AWindowWin32::GetWidth()
+{
+	return mWidth;
+}
+
+UINT AWindowWin32::GetHeight()
+{
+	return mHeight;
+}
+
+HWND AWindowWin32::GetHWND()
+{
+	return mHWnd;
+}
+
+bool AWindowWin32::InitWindow(const WindowInfo& mWindowInfo)
 {
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -103,17 +89,20 @@ void AWindowWin32::InstantiateWindow(const std::wstring& Name)
 	{
 		MessageBox(0, L"RegisterClass Failed !", 0, 0);
 	}
+	mWidth = mWindowInfo.Width;
+	mHeight = mWindowInfo.Height;
 	RECT R = { 0,0,mWidth,mHeight };
 	AdjustWindowRect(&R, WS_OVERLAPPED, false);
 	int width = R.right - R.left;
 	int height = R.bottom - R.top;
 
-	mName = Name;
+	mName = mWindowInfo.Name;
 	mHWnd = CreateWindow(L"MainWnd", mName.c_str(),
 		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, GetModuleHandle(0), 0);
 	if (!mHWnd)
 	{
 		MessageBox(0, L"CreateWindow Failed", 0, 0);
+		return false;
 	}
 	else
 	{
@@ -121,6 +110,8 @@ void AWindowWin32::InstantiateWindow(const std::wstring& Name)
 		UpdateWindow(mHWnd);
 		SetActiveWindow(mHWnd);
 		SetForegroundWindow(mHWnd);
+
+		return true;
 	}
 }
 
@@ -143,7 +134,7 @@ void AWindowWin32::CalculateFrameStats(const AGameTimer& gt)
 		std::wstring fpsStr = std::to_wstring(fps);
 		std::wstring mspfStr = std::to_wstring(mspf);
 
-		std::wstring windowText = mName+ L"    fps:	   " + fpsStr + L"    " + L"mspf:   " + mspfStr;
+		std::wstring windowText = mName + L"    fps:	   " + fpsStr + L"    " + L"mspf:   " + mspfStr;
 		SetWindowText(mHWnd, windowText.c_str());
 
 		frameCnt = 0;

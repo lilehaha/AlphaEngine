@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include "AEngine.h"
+#include "WindowBuilder.h"
 
 namespace Alpha
 {
-	AEngine::AEngine() : mEngineName(L"AlphaEngine")
+	AEngine::AEngine()
 	{
 #ifdef PlatformWindows
 		mCurPlatform = EPlatform::Windows;
@@ -21,7 +22,16 @@ namespace Alpha
 
 	bool AEngine::Init()
 	{
-		mWindow = AWindow::InitWindow(1080, 720, mEngineName);
+		WindowInfo mWindowInfo;
+		mWindowInfo.Width = 1080;
+		mWindowInfo.Height = 720;
+		mEngineName = L"AlphaEngine";
+		mWindowInfo.Name = mEngineName;
+
+		std::unique_ptr<WindowBuilder> mWindowBuilder = std::make_unique<WindowBuilder>();
+		mWindow = mWindowBuilder->CreateMainWindow();
+		mWindow->InitWindow(mWindowInfo);
+
 		if (!mWindow)
 		{
 			return false;
@@ -53,9 +63,14 @@ namespace Alpha
 
 	}
 
-	AWindow* AEngine::GetWindow()
+	std::shared_ptr<AWindow> AEngine::GetWindow()
 	{
 		return mWindow;
+	}
+
+	Alpha::EPlatform AEngine::GetCurrentPlatform()
+	{
+		return mCurPlatform;
 	}
 
 	void Alpha::AEngine::Start()
