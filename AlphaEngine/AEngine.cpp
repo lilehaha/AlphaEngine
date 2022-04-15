@@ -3,7 +3,7 @@
 
 namespace Alpha
 {
-	AEngine::AEngine()
+	AEngine::AEngine() : mEngineName(L"AlphaEngine")
 	{
 #ifdef PlatformWindows
 		mCurPlatform = EPlatform::Windows;
@@ -21,7 +21,7 @@ namespace Alpha
 
 	bool AEngine::Init()
 	{
-		mWindow = AWindow::InitWindow(1080, 720, "AlphaEngine");
+		mWindow = AWindow::InitWindow(1080, 720, mEngineName);
 		if (!mWindow)
 		{
 			return false;
@@ -36,8 +36,9 @@ namespace Alpha
 
 	void AEngine::Tick()
 	{
+		mTimer.Tick();
 		mRender->Render();
-
+		mWindow->CalculateFrameStats(mTimer);
 		/*	BeginFrame();
 			EndFrame();*/
 	}
@@ -59,6 +60,8 @@ namespace Alpha
 
 	void Alpha::AEngine::Start()
 	{
+		mTimer.Reset();
+		mTimer.Start();
 		IsRunning = true;
 		while (IsRunning && mWindow->Run())
 		{

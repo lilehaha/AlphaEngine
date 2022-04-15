@@ -142,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="ADefine.h" />
     <ClInclude Include="AEngine.h" />
+    <ClInclude Include="AGameTimer.h" />
     <ClInclude Include="ARender.h" />
     <ClInclude Include="ARHI.h" />
     <ClInclude Include="ARHIDX12.h" />
@@ -159,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AEngine.cpp" />
+    <ClCompile Include="AGameTimer.cpp" />
     <ClCompile Include="ARender.cpp" />
     <ClCompile Include="ARHI.cpp" />
     <ClCompile Include="ARHIDX12.cpp" />

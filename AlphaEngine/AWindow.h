@@ -1,11 +1,14 @@
 #pragma once
 #include "stdafx.h"
+#include "AGameTimer.h"
 
 class AWindow
 {
 public:
-	static AWindow* InitWindow(UINT Width, UINT Height, const std::string& Name);
+	static AWindow* InitWindow(UINT Width, UINT Height,const std::wstring& Name);
 	static void DestoryWindow(AWindow* Window);
+
+	virtual void CalculateFrameStats(const AGameTimer& gt) = 0;
 
 	virtual bool Run() = 0;
 	virtual UINT GetWidth() { return mWidth; }
@@ -25,11 +28,14 @@ protected:
 class AWindowWin32 : public AWindow
 {
 public:
-	AWindowWin32(UINT Width, UINT Height, const std::string& Name, void* HWnd);
+	AWindowWin32(UINT Width, UINT Height, const std::wstring& Name, void* HWnd);
 	virtual ~AWindowWin32();
 	virtual bool Run();
 
-	void InstantiateWindow(const std::string& Name);
+	void InstantiateWindow(const std::wstring& Name);
+	void CalculateFrameStats(const AGameTimer& gt) override;
+private:
+	std::wstring mName;
 };
 
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "AWindow.h"
 
-AWindow* AWindow::InitWindow(UINT Width, UINT Height, const std::string& Name)
+AWindow* AWindow::InitWindow(UINT Width, UINT Height,const std::wstring& Name)
 {
 	AWindow* mWindow = nullptr;
 #ifdef PlatformWindows
@@ -57,7 +57,7 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 #endif
 
-AWindowWin32::AWindowWin32(UINT Width, UINT Height, const std::string& Name, void* HWnd) : AWindow(Width, Height)
+AWindowWin32::AWindowWin32(UINT Width, UINT Height, const std::wstring& Name, void* HWnd) : AWindow(Width, Height)
 {
 	InstantiateWindow(Name);
 	mWndWin32 = this;
@@ -85,7 +85,7 @@ bool AWindowWin32::Run()
 	return !isQuit;
 }
 
-void AWindowWin32::InstantiateWindow(const std::string& Name)
+void AWindowWin32::InstantiateWindow(const std::wstring& Name)
 {
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -108,7 +108,8 @@ void AWindowWin32::InstantiateWindow(const std::string& Name)
 	int width = R.right - R.left;
 	int height = R.bottom - R.top;
 
-	mHWnd = CreateWindow(L"MainWnd", L"AlphaEngine",
+	mName = Name;
+	mHWnd = CreateWindow(L"MainWnd", mName.c_str(),
 		WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, 0, 0, GetModuleHandle(0), 0);
 	if (!mHWnd)
 	{
@@ -120,5 +121,32 @@ void AWindowWin32::InstantiateWindow(const std::string& Name)
 		UpdateWindow(mHWnd);
 		SetActiveWindow(mHWnd);
 		SetForegroundWindow(mHWnd);
+	}
+}
+
+void AWindowWin32::CalculateFrameStats(const AGameTimer& gt)
+{
+	static int frameCnt = 0;
+	static float timeElapsed = 0.0f;
+
+	frameCnt++;
+	//DEBUG
+	/*std::wstring text = std::to_wstring(gt.TotalTime());
+	std::wstring windowText = text;
+	SetWindowText(mHWnd, windowText.c_str());*/
+
+	if ((gt.TotalTime() - timeElapsed) >= 1.0f)
+	{
+		float fps = (float)frameCnt;
+		float mspf = 1000.0f / fps;
+
+		std::wstring fpsStr = std::to_wstring(fps);
+		std::wstring mspfStr = std::to_wstring(mspf);
+
+		std::wstring windowText = mName+ L"    fps:	   " + fpsStr + L"    " + L"mspf:   " + mspfStr;
+		SetWindowText(mHWnd, windowText.c_str());
+
+		frameCnt = 0;
+		timeElapsed += 1.0f;
 	}
 }

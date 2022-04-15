@@ -29,7 +29,9 @@ namespace Alpha
 	private:
 		AWindow* mWindow;
 		std::unique_ptr<ARender> mRender;
-	
+		AGameTimer mTimer;
+		std::wstring mEngineName;
+
 		bool IsRunning;
 		EPlatform mCurPlatform;
 	};
