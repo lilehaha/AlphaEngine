@@ -8,6 +8,9 @@ namespace Alpha
 	{
 #ifdef PlatformWindows
 		mCurPlatform = EPlatform::Windows;
+		mDisplayWidth = 1920;
+		mDisplayHeight = 1080;
+		mEngineName = L"AlphaEngine";
 #elif defined(PlatformIOS)
 		PCurrentPlatform = EPlatform::IOS;
 #elif defined(PlatformAndroid)
@@ -23,9 +26,8 @@ namespace Alpha
 	bool AEngine::Init()
 	{
 		WindowInfo mWindowInfo;
-		mWindowInfo.Width = 1080;
-		mWindowInfo.Height = 720;
-		mEngineName = L"AlphaEngine";
+		mWindowInfo.Width = mDisplayWidth;
+		mWindowInfo.Height = mDisplayHeight;
 		mWindowInfo.Name = mEngineName;
 
 		std::unique_ptr<WindowBuilder> mWindowBuilder = std::make_unique<WindowBuilder>();

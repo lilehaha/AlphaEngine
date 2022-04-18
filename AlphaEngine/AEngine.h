@@ -36,5 +36,8 @@ namespace Alpha
 
 		bool IsRunning;
 		EPlatform mCurPlatform;
+
+		UINT mDisplayWidth;
+		UINT mDisplayHeight;
 	};
 }

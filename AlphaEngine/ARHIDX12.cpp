@@ -7,6 +7,8 @@
 ARHIDX12::ARHIDX12()
 {
 	SetWindow(Alpha::AEngine::GetSingleton().GetWindow()->GetHWND());
+	mClientWidth = Alpha::AEngine::GetSingleton().GetWindow()->GetWidth();
+	mClientHeight = Alpha::AEngine::GetSingleton().GetWindow()->GetHeight();
 }
 
 ARHIDX12::~ARHIDX12()
@@ -20,6 +22,7 @@ bool ARHIDX12::Init()
 	{
 		return false;
 	}
+	
 	OnResize();
 
 	// Reset the command list to prep for initialization commands.
