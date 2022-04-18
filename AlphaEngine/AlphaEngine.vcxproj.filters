@@ -97,7 +97,7 @@
       <Filter>Header Files\Window</Filter>
     </ClInclude>
     <ClInclude Include="UploadBuffer.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -143,7 +143,7 @@
       <Filter>Source Files\Window</Filter>
     </ClCompile>
     <ClCompile Include="UploadBuffer.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

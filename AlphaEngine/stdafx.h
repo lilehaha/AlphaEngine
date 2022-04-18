@@ -26,6 +26,10 @@
 #include "ADefine.h"
 #include "Singleton.h"
 
+#include "glm/glm/glm.hpp"
+#include "glm/glm/gtc/quaternion.hpp"
+#include "glm/glm/gtc/matrix_transform.hpp"
+
 using namespace Microsoft::WRL;
 
 #pragma comment(lib, "d3dcompiler.lib")
