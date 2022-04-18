@@ -1,5 +1,19 @@
 #pragma once
 #include "ARHI.h"
+#include "UploadBuffer.h"
+
+using namespace DirectX;
+using namespace DirectX::PackedVector;
+struct Vertex
+{
+	XMFLOAT3 Pos;
+	XMFLOAT4 Color;
+};
+struct ObjectConstants
+{
+	XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
+};
+
 class ARHIDX12 :
     public ARHI
 {
@@ -9,6 +23,7 @@ public:
     virtual bool Init() override;
 	virtual void OnResize();
 	virtual void Draw() override;
+	virtual void Update() override;
 
 	void SetWindow(HWND HWnd);
 private:
@@ -28,6 +43,13 @@ private:
 	void LogAdapterOutputs(IDXGIAdapter* adapter);
 	void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 
+
+	void BuildDescriptorHeaps();
+	void BuildConstantBuffers();
+	void BuildRootSignature();
+	void BuildShadersAndInputLayout();
+	void BuildBoxGeometry();
+	void BuildPSO();
 private:
 	HWND mhMainWnd = nullptr;
 
@@ -63,5 +85,25 @@ private:
 	DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	int mClientWidth = 1280;
 	int mClientHeight = 720;
+
+	ComPtr<ID3D12DescriptorHeap> mCbvHeap = nullptr;
+	std::unique_ptr<UploadBuffer<ObjectConstants>> mObjectCB = nullptr;
+	ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
+
+	ComPtr<ID3DBlob> mvsByteCode = nullptr;
+	ComPtr<ID3DBlob> mpsByteCode = nullptr;
+
+	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
+
+	std::unique_ptr<MeshGeometry> mBoxGeo = nullptr;
+	ComPtr<ID3D12PipelineState> mPSO = nullptr;
+
+	XMFLOAT4X4 mWorld = MathHelper::Identity4x4();
+	XMFLOAT4X4 mView = MathHelper::Identity4x4();
+	XMFLOAT4X4 mProj = MathHelper::Identity4x4();
+
+	float mTheta = 1.5f * XM_PI;
+	float mPhi = XM_PIDIV4;
+	float mRadius = 5.0f;
 };
 

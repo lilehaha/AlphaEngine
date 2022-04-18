@@ -24,4 +24,5 @@ bool ARender::Init()
 void ARender::Render()
 {
 	mRHI->Draw();
+	mRHI->Update();
 }

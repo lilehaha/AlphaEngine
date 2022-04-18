@@ -37,11 +37,14 @@
     <Filter Include="Source Files\Render">
       <UniqueIdentifier>{087d9a33-9d8d-4a09-9ff6-bd072bee6888}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Window">
-      <UniqueIdentifier>{da8b0f26-7ba4-41e6-adf9-ed7903b1547c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Window">
       <UniqueIdentifier>{9ed78ae1-f786-4e4d-b3f5-238830063ac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Window">
+      <UniqueIdentifier>{da8b0f26-7ba4-41e6-adf9-ed7903b1547c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{6e40f659-8e68-4ac7-9a01-272b84c37209}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -85,13 +88,16 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="AWindow.h">
-      <Filter>Window</Filter>
+      <Filter>Header Files\Window</Filter>
     </ClInclude>
     <ClInclude Include="AWindowWin32.h">
-      <Filter>Window</Filter>
+      <Filter>Header Files\Window</Filter>
     </ClInclude>
     <ClInclude Include="WindowBuilder.h">
-      <Filter>Window</Filter>
+      <Filter>Header Files\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="UploadBuffer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -136,5 +142,13 @@
     <ClCompile Include="WindowBuilder.cpp">
       <Filter>Source Files\Window</Filter>
     </ClCompile>
+    <ClCompile Include="UploadBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\Color.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
