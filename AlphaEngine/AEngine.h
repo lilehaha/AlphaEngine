@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "AWindow.h"
-#include "ARender.h"
+#include "ARenderer.h"
 
 namespace Alpha
 {
@@ -30,7 +30,7 @@ namespace Alpha
 
 	private:
 		std::shared_ptr<AWindow> mWindow;
-		std::unique_ptr<ARender> mRender;
+		std::unique_ptr<ARenderer> mRender;
 		AGameTimer mTimer;
 		std::wstring mEngineName;
 

@@ -38,7 +38,7 @@ namespace Alpha
 		{
 			return false;
 		}
-		mRender = std::make_unique<ARender>();
+		mRender = std::make_unique<ARenderer>();
 		if (!mRender->Init())
 		{
 			return false;

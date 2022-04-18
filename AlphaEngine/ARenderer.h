@@ -1,11 +1,11 @@
 #pragma once
 #include "RHIBuilder.h"
 
-class ARender
+class ARenderer
 {
 public:
-	ARender();
-	virtual ~ARender();
+	ARenderer();
+	virtual ~ARenderer();
 
 	bool Init();
 	void Render();

@@ -1,16 +1,16 @@
 #include "stdafx.h"
-#include "ARender.h"
+#include "ARenderer.h"
 
-ARender::ARender() : mRHIBuilder(nullptr),mRHI(nullptr)
+ARenderer::ARenderer() : mRHIBuilder(nullptr),mRHI(nullptr)
 {
 }
 
-ARender::~ARender()
+ARenderer::~ARenderer()
 {
 
 }
 
-bool ARender::Init()
+bool ARenderer::Init()
 {
 	mRHIBuilder = std::make_unique<RHIBuilder>();
 	mRHI = mRHIBuilder->CreateRHI();
@@ -21,7 +21,7 @@ bool ARender::Init()
 	return true;
 }
 
-void ARender::Render()
+void ARenderer::Render()
 {
 	mRHI->Draw();
 	mRHI->Update();

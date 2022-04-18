@@ -78,7 +78,7 @@
     <ClInclude Include="ARHIDX12.h">
       <Filter>Header Files\RHI</Filter>
     </ClInclude>
-    <ClInclude Include="ARender.h">
+    <ClInclude Include="ARenderer.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
     <ClInclude Include="RHIBuilder.h">
@@ -127,7 +127,7 @@
     <ClCompile Include="ARHIDX12.cpp">
       <Filter>Source Files\RHI</Filter>
     </ClCompile>
-    <ClCompile Include="ARender.cpp">
+    <ClCompile Include="ARenderer.cpp">
       <Filter>Source Files\Render</Filter>
     </ClCompile>
     <ClCompile Include="RHIBuilder.cpp">
