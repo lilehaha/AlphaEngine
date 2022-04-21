@@ -57,7 +57,18 @@ namespace Alpha
 
 	void AEngine::Destory()
 	{
-
+		if (mWindow != nullptr)
+		{
+			mWindow = nullptr;
+		}
+		if (mRender != nullptr)
+		{
+			mRender = nullptr;
+		}
+		if (mScene != nullptr)
+		{
+			mScene = nullptr;
+		}
 	}
 
 	std::shared_ptr<AWindow> AEngine::GetWindow()
