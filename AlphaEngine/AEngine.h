@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "AWindow.h"
 #include "ARenderer.h"
+#include "AScene.h"
 
 namespace Alpha
 {
@@ -22,15 +23,14 @@ namespace Alpha
 		void Start();
 		void Tick();
 
-		void BeginFrame();
-		void EndFrame();
-
 		std::shared_ptr<AWindow> GetWindow();
+		std::shared_ptr<AScene> GetScene();
 		EPlatform GetCurrentPlatform();
 
 	private:
 		std::shared_ptr<AWindow> mWindow;
 		std::unique_ptr<ARenderer> mRender;
+		std::shared_ptr<AScene> mScene;
 		AGameTimer mTimer;
 		std::wstring mEngineName;
 

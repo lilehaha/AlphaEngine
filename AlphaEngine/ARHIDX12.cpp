@@ -1,14 +1,13 @@
 #include "stdafx.h"
 #include "ARHIDX12.h"
 #include "AEngine.h"
-#include <DirectXColors.h>
 
-
+using namespace Alpha;
 ARHIDX12::ARHIDX12()
 {
-	SetWindow(Alpha::AEngine::GetSingleton().GetWindow()->GetHWND());
-	mClientWidth = Alpha::AEngine::GetSingleton().GetWindow()->GetWidth();
-	mClientHeight = Alpha::AEngine::GetSingleton().GetWindow()->GetHeight();
+	SetWindow(AEngine::GetSingleton().GetWindow()->GetHWND());
+	mClientWidth = AEngine::GetSingleton().GetWindow()->GetWidth();
+	mClientHeight = AEngine::GetSingleton().GetWindow()->GetHeight();
 }
 
 ARHIDX12::~ARHIDX12()
@@ -22,7 +21,7 @@ bool ARHIDX12::Init()
 	{
 		return false;
 	}
-	
+
 	OnResize();
 
 	// Reset the command list to prep for initialization commands.
@@ -126,11 +125,10 @@ void ARHIDX12::OnResize()
 
 	mScissorRect = { 0, 0, mClientWidth, mClientHeight };
 
-
-	// The window resized, so update the aspect ratio and recompute the projection matrix.
-	float mAspectRatio = static_cast<float>(mClientWidth) / mClientHeight;
-	XMMATRIX P = XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, mAspectRatio, 1.0f, 1000.0f);
-	XMStoreFloat4x4(&mProj, P);
+	Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->SetACameraPosition(0.0f, 10.0f, -10.0f);
+	Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->SetLens(0.25f * glm::pi<float>(), AspectRatio(), 1.0f, 1000.0f);
+	Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->LookAt(Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition(),
+		glm::vec3(0.0f, 0.0f, 0.0f), Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetUp());
 }
 
 void ARHIDX12::Draw()
@@ -148,7 +146,7 @@ void ARHIDX12::Draw()
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-	mCommandList->ClearRenderTargetView(CurrentBackBufferView(),DirectX::Colors::LightSteelBlue, 0, nullptr);
+	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightSteelBlue, 0, nullptr);
 	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
@@ -186,32 +184,41 @@ void ARHIDX12::Draw()
 
 void ARHIDX12::Update()
 {
-	// Convert Spherical to Cartesian coordinates.
-	float x = mRadius * sinf(mPhi) * cosf(mTheta);
-	float z = mRadius * sinf(mPhi) * sinf(mTheta);
-	float y = mRadius * cosf(mPhi);
+	//// Convert Spherical to Cartesian coordinates.
+	//float x = mRadius * sinf(mPhi) * cosf(mTheta);
+	//float z = mRadius * sinf(mPhi) * sinf(mTheta);
+	//float y = mRadius * cosf(mPhi);
 
-	// Build the view matrix.
-	XMVECTOR pos = XMVectorSet(x, y, z, 1.0f);
-	XMVECTOR target = XMVectorZero();
-	XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	//// Build the view matrix.
+	//glm::vec3 pos = { x,y,z };
+	//glm::vec3 target = { 0,0,0 };
+	//glm::vec3 up = { 0,1,0 };
 
-	XMMATRIX view = XMMatrixLookAtLH(pos, target, up);
-	XMStoreFloat4x4(&mView, view);
+	//mView = glm::lookAtLH(pos, target, up);
 
-	XMMATRIX world = XMLoadFloat4x4(&mWorld);
-	XMMATRIX proj = XMLoadFloat4x4(&mProj);
-	XMMATRIX worldViewProj = world * view * proj;
+	//glm::mat4x4 worldViewProj =  mProj * mView * mWorld ;
 
+	//glm::mat4x4 mWorld = glm::identity<glm::mat4x4>();
+
+	glm::vec3 CamPos = Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition();
+	Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->UpdateViewMatrix();
+
+	glm::mat4x4 proj = Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetProjMatrix();
+	glm::mat4x4 view = Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetViewMatrix();
 	// Update the constant buffer with the latest worldViewProj matrix.
 	ObjectConstants objConstants;
-	XMStoreFloat4x4(&objConstants.WorldViewProj, XMMatrixTranspose(worldViewProj));
+	objConstants.WorldViewProj = glm::transpose(proj * view );
 	mObjectCB->CopyData(0, objConstants);
 }
 
 void ARHIDX12::SetWindow(HWND HWnd)
 {
 	mhMainWnd = HWnd;
+}
+
+float ARHIDX12::AspectRatio() const
+{
+	return static_cast<float>(mClientWidth) / mClientHeight;
 }
 
 bool ARHIDX12::InitD3D()
@@ -541,14 +548,14 @@ void ARHIDX12::BuildBoxGeometry()
 {
 	std::array<Vertex, 8> vertices =
 	{
-		Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::White) }),
-		Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Black) }),
-		Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f), XMFLOAT4(Colors::Red) }),
-		Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f), XMFLOAT4(Colors::Green) }),
-		Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Blue) }),
-		Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Yellow) }),
-		Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f), XMFLOAT4(Colors::Cyan) }),
-		Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f), XMFLOAT4(Colors::Magenta) })
+		Vertex({ glm::vec3(-1.0f, -1.0f, -1.0f), {1,1,1,1} }),
+		Vertex({ glm::vec3(-1.0f, +1.0f, -1.0f), {0,0,0,1} }),
+		Vertex({ glm::vec3(+1.0f, +1.0f, -1.0f), {0,0,0,1} }),
+		Vertex({ glm::vec3(+1.0f, -1.0f, -1.0f), {0,0,0,1} }),
+		Vertex({ glm::vec3(-1.0f, -1.0f, +1.0f), {0,0,0,1} }),
+		Vertex({ glm::vec3(-1.0f, +1.0f, +1.0f), {0,0,0,1} }),
+		Vertex({ glm::vec3(+1.0f, +1.0f, +1.0f), {0,0,0,1} }),
+		Vertex({ glm::vec3(+1.0f, -1.0f, +1.0f), {0,0,0,1} })
 	};
 
 	std::array<std::uint16_t, 36> indices =

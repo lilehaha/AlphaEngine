@@ -121,6 +121,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,16 +146,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ACameraController.h" />
     <ClInclude Include="ADefine.h" />
     <ClInclude Include="AEngine.h" />
     <ClInclude Include="AGameTimer.h" />
+    <ClInclude Include="AInput.h" />
+    <ClInclude Include="AInputWin32.h" />
     <ClInclude Include="ARenderer.h" />
     <ClInclude Include="ARHI.h" />
     <ClInclude Include="ARHIDX12.h" />
+    <ClInclude Include="AScene.h" />
     <ClInclude Include="AWindowWin32.h" />
+    <ClInclude Include="ACamera.h" />
     <ClInclude Include="d3dUtil.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="AWindow.h" />
+    <ClInclude Include="InputBuilder.h" />
+    <ClInclude Include="InputSystem.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RHIBuilder.h" />
@@ -166,17 +175,26 @@
     <ResourceCompile Include="AlphaEngine.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ACameraController.cpp" />
     <ClCompile Include="AEngine.cpp" />
     <ClCompile Include="AGameTimer.cpp" />
+    <ClCompile Include="AInputWin32.cpp" />
     <ClCompile Include="ARenderer.cpp" />
     <ClCompile Include="ARHI.cpp" />
     <ClCompile Include="ARHIDX12.cpp" />
+    <ClCompile Include="AScene.cpp" />
+    <ClCompile Include="AWindow.cpp" />
     <ClCompile Include="AWindowWin32.cpp" />
+    <ClCompile Include="ACamera.cpp" />
     <ClCompile Include="d3dUtil.cpp" />
+    <ClCompile Include="InputBuilder.cpp" />
+    <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="RHIBuilder.cpp" />
-    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="UploadBuffer.cpp" />
     <ClCompile Include="WindowBuilder.cpp" />
   </ItemGroup>

@@ -6,12 +6,12 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 struct Vertex
 {
-	XMFLOAT3 Pos;
-	XMFLOAT4 Color;
+	glm::vec3 Pos;
+	glm::vec4 Color;
 };
 struct ObjectConstants
 {
-	XMFLOAT4X4 WorldViewProj = MathHelper::Identity4x4();
+	glm::mat4x4 WorldViewProj = glm::identity<glm::mat4x4>();
 };
 
 class ARHIDX12 :
@@ -26,6 +26,7 @@ public:
 	virtual void Update() override;
 
 	void SetWindow(HWND HWnd);
+	float AspectRatio() const;
 private:
 	bool InitD3D();
 	virtual void CreateRtvAndDsvDescriptorHeaps();
@@ -98,9 +99,9 @@ private:
 	std::unique_ptr<MeshGeometry> mBoxGeo = nullptr;
 	ComPtr<ID3D12PipelineState> mPSO = nullptr;
 
-	XMFLOAT4X4 mWorld = MathHelper::Identity4x4();
-	XMFLOAT4X4 mView = MathHelper::Identity4x4();
-	XMFLOAT4X4 mProj = MathHelper::Identity4x4();
+	glm::mat4x4 mWorld = glm::identity<glm::mat4x4>();
+	glm::mat4x4 mView = glm::identity<glm::mat4x4>();
+	glm::mat4x4 mProj = glm::identity<glm::mat4x4>();
 
 	float mTheta = 1.5f * XM_PI;
 	float mPhi = XM_PIDIV4;

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "AWindowWin32.h"
+#include "AEngine.h"
+#include "InputBuilder.h"
 
 #ifdef PlatformWindows
 static AWindowWin32* mWndWin32 = nullptr;
@@ -18,6 +20,17 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		((MINMAXINFO*)lParam)->ptMinTrackSize.x = 200;
 		((MINMAXINFO*)lParam)->ptMinTrackSize.y = 100;
 		return 0;
+	case WM_RBUTTONDOWN:
+		SetCapture(hWnd);
+		Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->OnMouseDown(KeyCode::Mouse2, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		return 0;
+	case WM_RBUTTONUP:
+		ReleaseCapture();
+		Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->OnMouseUp(KeyCode::Mouse2);
+		return 0;
+	case WM_MOUSEMOVE:
+		Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		return 0;
 	default:
 		break;
 	}
@@ -31,6 +44,8 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 AWindowWin32::AWindowWin32()
 {
+	std::unique_ptr<InputBuilder> mInputBuilder = std::make_unique<InputBuilder>();
+	mInput = mInputBuilder->CreateInput();
 	mWndWin32 = this;
 }
 
@@ -43,6 +58,7 @@ bool AWindowWin32::Run()
 {
 	MSG msg = { 0 };
 	bool isQuit = false;
+	mInput->Update();
 	while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
@@ -56,15 +72,6 @@ bool AWindowWin32::Run()
 	return !isQuit;
 }
 
-UINT AWindowWin32::GetWidth()
-{
-	return mWidth;
-}
-
-UINT AWindowWin32::GetHeight()
-{
-	return mHeight;
-}
 
 HWND AWindowWin32::GetHWND()
 {

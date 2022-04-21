@@ -4,6 +4,6 @@
 class WindowBuilder
 {
 public:
-	std::shared_ptr<AWindow>  CreateMainWindow();
+	std::shared_ptr<AWindow> CreateMainWindow();
 };
 

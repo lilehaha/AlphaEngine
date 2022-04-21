@@ -4,9 +4,6 @@
 #include <dxgi1_4.h>
 #include <d3d12.h>
 #include <d3dcompiler.h>
-#include <DirectXPackedVector.h>
-#include <DirectXColors.h>
-#include <DirectXCollision.h>
 #include <string>
 #include <memory>
 #include <algorithm>
@@ -19,16 +16,22 @@
 #include <windowsx.h>
 #include <comdef.h>
 
+#define _XM_NO_INTRINSICS_
+//#include <DirectXMath.h>
+#include <DirectXCollision.h>
+#include <DirectXPackedVector.h>
+#include <DirectXColors.h>
+
 #include "MathHelper.h"
 #include "d3dx12.h"
 #include "d3dUtil.h"
 
 #include "ADefine.h"
 #include "Singleton.h"
-
-#include "glm/glm/glm.hpp"
-#include "glm/glm/gtc/quaternion.hpp"
-#include "glm/glm/gtc/matrix_transform.hpp"
+#include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/rotate_vector.hpp"
 
 using namespace Microsoft::WRL;
 

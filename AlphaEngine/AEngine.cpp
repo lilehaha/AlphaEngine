@@ -34,6 +34,7 @@ namespace Alpha
 		mWindow = mWindowBuilder->CreateMainWindow();
 		mWindow->InitWindow(mWindowInfo);
 
+		mScene = std::make_shared<AScene>();
 		if (!mWindow)
 		{
 			return false;
@@ -50,24 +51,18 @@ namespace Alpha
 	{
 		mTimer.Tick();
 		mRender->Render();
+		mScene->Update();
 		mWindow->CalculateFrameStats(mTimer);
-		/*	BeginFrame();
-			EndFrame();*/
-	}
-
-	void AEngine::BeginFrame()
-	{
-		
-	}
-
-	void AEngine::EndFrame()
-	{
-
 	}
 
 	std::shared_ptr<AWindow> AEngine::GetWindow()
 	{
 		return mWindow;
+	}
+
+	std::shared_ptr<AScene> AEngine::GetScene()
+	{
+		return mScene;
 	}
 
 	Alpha::EPlatform AEngine::GetCurrentPlatform()
