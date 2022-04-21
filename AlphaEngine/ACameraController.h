@@ -13,7 +13,7 @@ public:
 	void VAxisMove(glm::vec3& Speed);
 	void LiftMove(glm::vec3& Speed);
 
-	void Pitch(const float& Angle);
+	void Pitch(float Angle);
 	void Roll(float Angle);
 	void Yaw(float Angle);
 

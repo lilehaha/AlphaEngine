@@ -22,6 +22,7 @@ namespace Alpha
 		bool Init();
 		void Start();
 		void Tick();
+		void Destory();
 
 		std::shared_ptr<AWindow> GetWindow();
 		std::shared_ptr<AScene> GetScene();

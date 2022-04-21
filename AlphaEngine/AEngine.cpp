@@ -55,6 +55,11 @@ namespace Alpha
 		mWindow->CalculateFrameStats(mTimer);
 	}
 
+	void AEngine::Destory()
+	{
+
+	}
+
 	std::shared_ptr<AWindow> AEngine::GetWindow()
 	{
 		return mWindow;

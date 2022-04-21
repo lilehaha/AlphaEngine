@@ -184,22 +184,6 @@ void ARHIDX12::Draw()
 
 void ARHIDX12::Update()
 {
-	//// Convert Spherical to Cartesian coordinates.
-	//float x = mRadius * sinf(mPhi) * cosf(mTheta);
-	//float z = mRadius * sinf(mPhi) * sinf(mTheta);
-	//float y = mRadius * cosf(mPhi);
-
-	//// Build the view matrix.
-	//glm::vec3 pos = { x,y,z };
-	//glm::vec3 target = { 0,0,0 };
-	//glm::vec3 up = { 0,1,0 };
-
-	//mView = glm::lookAtLH(pos, target, up);
-
-	//glm::mat4x4 worldViewProj =  mProj * mView * mWorld ;
-
-	//glm::mat4x4 mWorld = glm::identity<glm::mat4x4>();
-
 	glm::vec3 CamPos = Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition();
 	Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->UpdateViewMatrix();
 

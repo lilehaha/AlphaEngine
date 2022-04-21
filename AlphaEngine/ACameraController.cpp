@@ -35,7 +35,7 @@ void ACameraController::LiftMove(glm::vec3& Speed)
 	mCamera->SetDirty(true);
 }
 
-void ACameraController::Pitch(const float& Angle)
+void ACameraController::Pitch(float Angle)
 {
 	mCamera->SetRight(glm::rotate(mCamera->GetRight(), Angle,mCamera->GetUp()));
 	mCamera->SetForward(glm::rotate(mCamera->GetForward(), Angle,mCamera->GetUp()));
