@@ -50,8 +50,8 @@ namespace Alpha
 	void AEngine::Tick()
 	{
 		mTimer.Tick();
-		mRender->Render();
 		mScene->Update();
+		mRender->Render();
 		mWindow->CalculateFrameStats(mTimer);
 	}
 

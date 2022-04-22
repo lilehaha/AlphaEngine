@@ -17,7 +17,6 @@
 #include <comdef.h>
 
 #define _XM_NO_INTRINSICS_
-//#include <DirectXMath.h>
 #include <DirectXCollision.h>
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>

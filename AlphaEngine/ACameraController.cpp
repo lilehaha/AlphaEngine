@@ -37,8 +37,8 @@ void ACameraController::LiftMove(glm::vec3& Speed)
 
 void ACameraController::Pitch(float Angle)
 {
-	mCamera->SetRight(glm::rotate(mCamera->GetRight(), Angle,mCamera->GetUp()));
-	mCamera->SetForward(glm::rotate(mCamera->GetForward(), Angle,mCamera->GetUp()));
+	mCamera->SetUp(glm::rotate(mCamera->GetUp(), Angle,mCamera->GetRight()));
+	mCamera->SetForward(glm::rotate(mCamera->GetForward(), Angle,mCamera->GetRight()));
 
 	mCamera->SetDirty(true);
 }
@@ -53,8 +53,8 @@ void ACameraController::Roll(float Angle)
 
 void ACameraController::Yaw(float Angle)
 {
-	mCamera->SetUp(glm::rotate(mCamera->GetUp(), Angle, mCamera->GetRight()));
-	mCamera->SetForward(glm::rotate(mCamera->GetForward(), Angle, mCamera->GetRight()));
+	mCamera->SetRight(glm::rotate(mCamera->GetRight(), Angle, mCamera->GetUp()));
+	mCamera->SetForward(glm::rotate(mCamera->GetForward(), Angle, mCamera->GetUp()));	
 
 	mCamera->SetDirty(true);
 }
@@ -90,8 +90,8 @@ void ACameraController::Update()
 		float dx = glm::radians(0.05f * static_cast<float>(mNewMousePos.first - mLastMousePos.first));
 		float dy = glm::radians(0.05f * static_cast<float>(mNewMousePos.second - mLastMousePos.second));
 
-		Pitch(dx);
-		Yaw(dy);
+		Yaw(dx);
+		Pitch(dy);
 	}
 	mLastMousePos = mNewMousePos;
 }
@@ -100,6 +100,7 @@ void ACameraController::SetCameraObj(std::shared_ptr<ACamera> Camera)
 {
 	mCamera = Camera;
 }
+
 
 glm::vec3 ACameraController::VectorMultiplyAdd(glm::vec3 MultiplyV1, glm::vec3 MultiplyV2, glm::vec3 addV)
 {

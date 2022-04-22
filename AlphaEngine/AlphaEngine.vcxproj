@@ -156,8 +156,10 @@
     <ClInclude Include="ARHI.h" />
     <ClInclude Include="ARHIDX12.h" />
     <ClInclude Include="AScene.h" />
+    <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AWindowWin32.h" />
     <ClInclude Include="ACamera.h" />
+    <ClInclude Include="CommonResourceDefine.h" />
     <ClInclude Include="d3dUtil.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="AWindow.h" />
@@ -183,6 +185,7 @@
     <ClCompile Include="ARHI.cpp" />
     <ClCompile Include="ARHIDX12.cpp" />
     <ClCompile Include="AScene.cpp" />
+    <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="AWindow.cpp" />
     <ClCompile Include="AWindowWin32.cpp" />
     <ClCompile Include="ACamera.cpp" />
