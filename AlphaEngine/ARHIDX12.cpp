@@ -2,7 +2,6 @@
 #include "ARHIDX12.h"
 #include "AEngine.h"
 
-using namespace Alpha;
 ARHIDX12::ARHIDX12()
 {
 	SetWindow(AEngine::GetSingleton().GetWindow()->GetHWND());
@@ -125,10 +124,10 @@ void ARHIDX12::OnResize()
 
 	mScissorRect = { 0, 0, mClientWidth, mClientHeight };
 
-	Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->SetACameraPosition(0.0f, 10.0f, -10.0f);
-	Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->SetLens(0.25f * glm::pi<float>(), AspectRatio(), 1.0f, 1000.0f);
-	Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->LookAt(Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition(),
-		glm::vec3(0.0f, 0.0f, 0.0f), Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetUp());
+	AEngine::GetSingleton().GetScene()->GetCamera()->SetACameraPosition(0.0f, 10.0f, -10.0f);
+	AEngine::GetSingleton().GetScene()->GetCamera()->SetLens(0.25f * glm::pi<float>(), AspectRatio(), 1.0f, 1000.0f);
+	AEngine::GetSingleton().GetScene()->GetCamera()->LookAt(AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition(),
+		glm::vec3(0.0f, 0.0f, 0.0f), AEngine::GetSingleton().GetScene()->GetCamera()->GetUp());
 }
 
 void ARHIDX12::Draw()
@@ -184,11 +183,11 @@ void ARHIDX12::Draw()
 
 void ARHIDX12::Update()
 {
-	glm::vec3 CamPos = Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition();
-	Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->UpdateViewMatrix();
+	glm::vec3 CamPos = AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition();
+	AEngine::GetSingleton().GetScene()->GetCamera()->UpdateViewMatrix();
 
-	glm::mat4x4 proj = Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetProjMatrix();
-	glm::mat4x4 view = Alpha::AEngine::GetSingleton().GetScene()->GetCamera()->GetViewMatrix();
+	glm::mat4x4 proj = AEngine::GetSingleton().GetScene()->GetCamera()->GetProjMatrix();
+	glm::mat4x4 view = AEngine::GetSingleton().GetScene()->GetCamera()->GetViewMatrix();
 	// Update the constant buffer with the latest worldViewProj matrix.
 	ObjectConstants objConstants;
 	objConstants.WorldViewProj = glm::transpose(proj * view );

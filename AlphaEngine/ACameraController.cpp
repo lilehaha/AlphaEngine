@@ -61,31 +61,31 @@ void ACameraController::Yaw(float Angle)
 
 void ACameraController::Update()
 {
-	std::pair<float, float> mNewMousePos = Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->GetMousePosition();
-	if (Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::W))
+	std::pair<float, float> mNewMousePos = AEngine::GetSingleton().GetWindow()->GetInput()->GetMousePosition();
+	if (AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::W))
 	{
 		HAxisMove(mSpeed);
 	}
-	else if (Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::A))
+	else if (AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::A))
 	{
 		VAxisMove(-mSpeed);
 	}
-	else if (Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::S))
+	else if (AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::S))
 	{
 		HAxisMove(-mSpeed);
 	}
-	else if (Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::D))
+	else if (AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::D))
 	{
 		VAxisMove(mSpeed);
-	}else if (Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::Q))
+	}else if (AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::Q))
 	{
 		LiftMove(mSpeed);
 	}
-	else if (Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::E))
+	else if (AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::E))
 	{
 		LiftMove(-mSpeed);
 	}
-	else if (Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::Mouse2))
+	else if (AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyHold(KeyCode::Mouse2))
 	{
 		float dx = glm::radians(0.05f * static_cast<float>(mNewMousePos.first - mLastMousePos.first));
 		float dy = glm::radians(0.05f * static_cast<float>(mNewMousePos.second - mLastMousePos.second));

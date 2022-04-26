@@ -10,7 +10,7 @@ public:
 	void UpDate();
 	void Destroy();
 private:
-	std::unique_ptr<Alpha::AEngine> mEngine;
+	std::unique_ptr<AEngine> mEngine;
 	std::unique_ptr<AGameLogic> mGameLogic;
 };
 

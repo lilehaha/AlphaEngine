@@ -4,7 +4,7 @@
 
 void AGameInstance::Init(HINSTANCE hInstance)
 {
-	mEngine = std::make_unique<Alpha::AEngine>();
+	mEngine = std::make_unique<AEngine>();
 	mGameLogic = std::make_unique<AGameLogic>();
 	if (mEngine->Init())
 	{

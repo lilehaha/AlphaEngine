@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "AGameInstance.h"
 
-using namespace Alpha;
 #ifdef PlatformUnknown
 int main()
 {

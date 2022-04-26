@@ -55,9 +55,3 @@ struct ActorInfo
 	std::vector<FTransform> Transforms;
 };
 
-struct SceneInfo
-{
-	std::string Name;
-	std::vector<ActorInfo> Actors;
-};
-

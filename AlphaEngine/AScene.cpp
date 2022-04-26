@@ -31,7 +31,6 @@ std::shared_ptr<ACamera> AScene::GetCamera()
 bool AScene::LoadScene(const std::string& Path)
 {
 	mActors.clear();
-	mSceneInfo = std::make_unique<SceneInfo>();
 	std::set<std::string> meshName;
 
 	std::ifstream fin(Path, std::ios::binary);
@@ -39,8 +38,8 @@ bool AScene::LoadScene(const std::string& Path)
 	{
 		int len = 0;
 		fin.read((char*)&len, sizeof(int32_t));
-		mSceneInfo->Name.resize(len);
-		fin.read((char*)mSceneInfo->Name.data(), sizeof(char) * len);
+		mSceneInfo.resize(len);
+		fin.read((char*)mSceneInfo.data(), sizeof(char) * len);
 
 		int actorNum = 0;
 		fin.read((char*)&actorNum, sizeof(int32_t));
@@ -79,7 +78,7 @@ bool AScene::LoadScene(const std::string& Path)
 	for (auto name : meshName)
 	{
 		std::string meshPath = std::string("Data\\Mesh\\").append(name.c_str()).append(".dat");
-		Alpha::AEngine::GetSingleton().GetAssetManager()->LoadStaticMesh(meshPath);
+		AEngine::GetSingleton().GetAssetManager()->LoadStaticMesh(meshPath);
 	}
 
 	return true;

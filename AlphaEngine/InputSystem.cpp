@@ -29,7 +29,7 @@ void InputSystem::Update()
 {
 	for (auto Event : EditorEventTable)
 	{
-		if (Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyDown(Event.first))
+		if (AEngine::GetSingleton().GetWindow()->GetInput()->GetKeyDown(Event.first))
 		{
 			Event.second();
 			return;

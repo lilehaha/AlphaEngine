@@ -22,14 +22,14 @@ LRESULT CALLBACK MainWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	case WM_RBUTTONDOWN:
 		SetCapture(hWnd);
-		Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->OnMouseDown(KeyCode::Mouse2, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		AEngine::GetSingleton().GetWindow()->GetInput()->OnMouseDown(KeyCode::Mouse2, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		return 0;
 	case WM_RBUTTONUP:
 		ReleaseCapture();
-		Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->OnMouseUp(KeyCode::Mouse2);
+		AEngine::GetSingleton().GetWindow()->GetInput()->OnMouseUp(KeyCode::Mouse2);
 		return 0;
 	case WM_MOUSEMOVE:
-		Alpha::AEngine::GetSingleton().GetWindow()->GetInput()->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		AEngine::GetSingleton().GetWindow()->GetInput()->OnMouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		return 0;
 	default:
 		break;

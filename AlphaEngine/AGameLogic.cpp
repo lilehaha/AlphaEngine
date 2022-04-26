@@ -2,7 +2,6 @@
 #include "AGameLogic.h"
 #include "AEngine.h"
 
-using namespace Alpha;
 void AGameLogic::Init()
 {
 	LoadMap("Data\\Map\\Minimal_Default.dat");

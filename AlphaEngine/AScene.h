@@ -18,7 +18,7 @@ public:
 	std::unique_ptr<ACameraController> mCameraController;
 
 
-	std::unique_ptr<SceneInfo> mSceneInfo;
+	std::string mSceneInfo;
 	std::unordered_map<std::string, ActorInfo*> mActors;
 };
 
