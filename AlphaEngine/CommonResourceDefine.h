@@ -34,8 +34,9 @@ public:
 	FVector Scale3D;
 };
 
-struct StaticMeshLODInfo
+struct StaticMeshInfo
 {
+	std::string Name;
 	int NumVertices = 0;
 	int NumTriangles = 0;
 	int NumIndices = 0;
@@ -45,13 +46,6 @@ struct StaticMeshLODInfo
 	std::vector<FVector4> TangentXs;
 	std::vector<FVector4> TangentYs;
 	std::vector<FVector2D> UVs;
-};
-
-struct StaticMeshInfo
-{
-	std::string Name;
-	int NumLOD;
-	std::vector<StaticMeshLODInfo> MeshLODInfo;
 }; 
 
 struct ActorInfo

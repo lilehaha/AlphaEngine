@@ -3,6 +3,7 @@
 #include "AWindow.h"
 #include "ARenderer.h"
 #include "AScene.h"
+#include "AssetManager.h"
 
 namespace Alpha
 {
@@ -26,12 +27,15 @@ namespace Alpha
 
 		std::shared_ptr<AWindow> GetWindow();
 		std::shared_ptr<AScene> GetScene();
+		std::shared_ptr<AssetManager> GetAssetManager();
+
 		EPlatform GetCurrentPlatform();
 
 	private:
 		std::shared_ptr<AWindow> mWindow;
 		std::unique_ptr<ARenderer> mRender;
 		std::shared_ptr<AScene> mScene;
+		std::shared_ptr<AssetManager> mAssetManager;
 		AGameTimer mTimer;
 		std::wstring mEngineName;
 

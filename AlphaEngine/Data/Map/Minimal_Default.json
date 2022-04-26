@@ -1,0 +1,208 @@
+{
+	"name": "Minimal_Default",
+	"actors": [
+		{
+			"name": "Floor_14",
+			"staticMeshNames": [
+				"Floor_400x400"
+			],
+			"tranforms": [
+				{
+					"rotation":
+					{
+						"x": 0,
+						"y": 0,
+						"z": 0,
+						"w": 1
+					},
+					"translation":
+					{
+						"x": -400,
+						"y": -200,
+						"z": 32
+					},
+					"scale3D":
+					{
+						"x": 1,
+						"y": 1,
+						"z": 2
+					}
+				}
+			]
+		},
+		{
+			"name": "Table",
+			"staticMeshNames": [
+				"SM_TableRound"
+			],
+			"tranforms": [
+				{
+					"rotation":
+					{
+						"x": -0,
+						"y": 0,
+						"z": -0.90630829334259033,
+						"w": 0.42261713743209839
+					},
+					"translation":
+					{
+						"x": -180,
+						"y": 0,
+						"z": 32
+					},
+					"scale3D":
+					{
+						"x": 1,
+						"y": 1,
+						"z": 1
+					}
+				}
+			]
+		},
+		{
+			"name": "Chair",
+			"staticMeshNames": [
+				"SM_Chair"
+			],
+			"tranforms": [
+				{
+					"rotation":
+					{
+						"x": 0,
+						"y": 0,
+						"z": -0.23768536746501923,
+						"w": 0.97134220600128174
+					},
+					"translation":
+					{
+						"x": -210,
+						"y": 105,
+						"z": 32
+					},
+					"scale3D":
+					{
+						"x": 1,
+						"y": 1,
+						"z": 1
+					}
+				}
+			]
+		},
+		{
+			"name": "Chair_15",
+			"staticMeshNames": [
+				"SM_Chair"
+			],
+			"tranforms": [
+				{
+					"rotation":
+					{
+						"x": 0,
+						"y": 0,
+						"z": 0.52806687355041504,
+						"w": 0.84920281171798706
+					},
+					"translation":
+					{
+						"x": -215,
+						"y": -120,
+						"z": 32
+					},
+					"scale3D":
+					{
+						"x": 1,
+						"y": 1,
+						"z": 1
+					}
+				}
+			]
+		},
+		{
+			"name": "Floor",
+			"staticMeshNames": [
+				"Floor_400x400"
+			],
+			"tranforms": [
+				{
+					"rotation":
+					{
+						"x": 0,
+						"y": 0,
+						"z": 0,
+						"w": 1
+					},
+					"translation":
+					{
+						"x": 0,
+						"y": -200,
+						"z": 32
+					},
+					"scale3D":
+					{
+						"x": 1,
+						"y": 1,
+						"z": 2
+					}
+				}
+			]
+		},
+		{
+			"name": "Statue",
+			"staticMeshNames": [
+				"SM_Statue"
+			],
+			"tranforms": [
+				{
+					"rotation":
+					{
+						"x": 0,
+						"y": 0,
+						"z": -0.99619460105895996,
+						"w": 0.087156474590301514
+					},
+					"translation":
+					{
+						"x": -181,
+						"y": 1,
+						"z": 102
+					},
+					"scale3D":
+					{
+						"x": 0.5,
+						"y": 0.5,
+						"z": 0.5
+					}
+				}
+			]
+		},
+		{
+			"name": "BP_Sky_Sphere_C_2",
+			"staticMeshNames": [
+				"SM_SkySphere"
+			],
+			"tranforms": [
+				{
+					"rotation":
+					{
+						"x": 0,
+						"y": 0,
+						"z": 0,
+						"w": 1
+					},
+					"translation":
+					{
+						"x": 0,
+						"y": 0,
+						"z": 0
+					},
+					"scale3D":
+					{
+						"x": 400,
+						"y": 400,
+						"z": 400
+					}
+				}
+			]
+		}
+	]
+}

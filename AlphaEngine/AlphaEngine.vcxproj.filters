@@ -64,6 +64,12 @@
     <Filter Include="Source Files\Resource">
       <UniqueIdentifier>{1fda8034-f6f8-48c8-bf76-ce58ddfcf1a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{d04b20da-6b49-4703-be75-4937f10425bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game">
+      <UniqueIdentifier>{8862d7d7-a3b2-4b1b-b21f-40c89cda092d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -144,6 +150,15 @@
     <ClInclude Include="CommonResourceDefine.h">
       <Filter>Header Files\Resource</Filter>
     </ClInclude>
+    <ClInclude Include="Actor.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="AGameLogic.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="AGameInstance.h">
+      <Filter>Header Files\Game</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AlphaEngine.rc">
@@ -214,10 +229,17 @@
     <ClCompile Include="AssetManager.cpp">
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
+    <ClCompile Include="Actor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AGameLogic.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="AGameInstance.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Color.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
+    <None Include="Shaders\Color.hlsl" />
   </ItemGroup>
 </Project>

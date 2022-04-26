@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "AEngine.h"
+#include "AGameInstance.h"
 
 using namespace Alpha;
 #ifdef PlatformUnknown
@@ -14,14 +14,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInstance, LPSTR lpCmdLine,
 #if defined(DEBUG) | defined(_DEBUG)
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-	std::unique_ptr<AEngine> AlphaEngine = std::make_unique<AEngine>();
-	if (AlphaEngine->Init())
+	try
 	{
-		AlphaEngine->Start();
+		std::unique_ptr<AGameInstance> mGameInstance = std::make_unique<AGameInstance>();
+		mGameInstance->Init(hInstance);
+		mGameInstance->UpDate();
+		mGameInstance->Destroy();
+		return 0;
 	}
-	else
+	catch (DxException& e)
 	{
-		MessageBox(0, L"Engine Init Failed !", 0, 0);
+		MessageBox(nullptr, e.ToString().c_str(), L"HR Failed", MB_OK);
+		return 0;
 	}
 }
 #endif

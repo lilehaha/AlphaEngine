@@ -33,12 +33,14 @@ namespace Alpha
 		std::unique_ptr<WindowBuilder> mWindowBuilder = std::make_unique<WindowBuilder>();
 		mWindow = mWindowBuilder->CreateMainWindow();
 		mWindow->InitWindow(mWindowInfo);
-
-		mScene = std::make_shared<AScene>();
 		if (!mWindow)
 		{
 			return false;
 		}
+
+		mAssetManager = std::make_shared<AssetManager>();
+		mScene = std::make_shared<AScene>();
+
 		mRender = std::make_unique<ARenderer>();
 		if (!mRender->Init())
 		{
@@ -81,12 +83,17 @@ namespace Alpha
 		return mScene;
 	}
 
-	Alpha::EPlatform AEngine::GetCurrentPlatform()
+	std::shared_ptr<AssetManager> AEngine::GetAssetManager()
+	{
+		return mAssetManager;
+	}
+
+	EPlatform AEngine::GetCurrentPlatform()
 	{
 		return mCurPlatform;
 	}
 
-	void Alpha::AEngine::Start()
+	void AEngine::Start()
 	{
 		mTimer.Reset();
 		mTimer.Start();

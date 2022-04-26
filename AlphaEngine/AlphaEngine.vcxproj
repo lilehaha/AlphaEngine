@@ -147,8 +147,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ACameraController.h" />
+    <ClInclude Include="Actor.h" />
     <ClInclude Include="ADefine.h" />
     <ClInclude Include="AEngine.h" />
+    <ClInclude Include="AGameInstance.h" />
+    <ClInclude Include="AGameLogic.h" />
     <ClInclude Include="AGameTimer.h" />
     <ClInclude Include="AInput.h" />
     <ClInclude Include="AInputWin32.h" />
@@ -178,7 +181,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ACameraController.cpp" />
+    <ClCompile Include="Actor.cpp" />
     <ClCompile Include="AEngine.cpp" />
+    <ClCompile Include="AGameInstance.cpp" />
+    <ClCompile Include="AGameLogic.cpp" />
     <ClCompile Include="AGameTimer.cpp" />
     <ClCompile Include="AInputWin32.cpp" />
     <ClCompile Include="ARenderer.cpp" />
@@ -203,14 +209,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Color.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

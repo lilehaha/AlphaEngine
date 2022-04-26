@@ -14,8 +14,6 @@ public:
 	void Tick(); 
 
 private:
-	void SetDisplaySize();
-private:
 	double mSecondsPerCount;
 	double mDeltaTime;
 
