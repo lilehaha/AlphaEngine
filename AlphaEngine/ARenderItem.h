@@ -5,7 +5,6 @@
 class ARenderItem
 {
 public:
-
 	glm::mat4x4 mWorld = glm::identity<glm::mat4x4>();
 	glm::mat4x4 mRotation = glm::identity<glm::mat4x4>();
 	glm::mat4x4 mScale = glm::identity<glm::mat4x4>();

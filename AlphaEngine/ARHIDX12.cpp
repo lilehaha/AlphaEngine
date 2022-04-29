@@ -127,8 +127,8 @@ void ARHIDX12::OnResize()
 
 	mScissorRect = { 0, 0, mClientWidth, mClientHeight };
 
-	AEngine::GetSingleton().GetScene()->GetCamera()->SetACameraPosition(0.0f, 10.0f, -10.0f);
-	AEngine::GetSingleton().GetScene()->GetCamera()->SetLens(0.25f * glm::pi<float>(), AspectRatio(), 1.0f, 1000.0f);
+	AEngine::GetSingleton().GetScene()->GetCamera()->SetACameraPosition(500.0f, 500.0f, 500.0f);
+	AEngine::GetSingleton().GetScene()->GetCamera()->SetLens(0.25f * glm::pi<float>(), AspectRatio(), 1.0f, 10000.0f);
 	AEngine::GetSingleton().GetScene()->GetCamera()->LookAt(AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition(),
 		glm::vec3(0.0f, 0.0f, 0.0f), AEngine::GetSingleton().GetScene()->GetCamera()->GetUp());
 }
@@ -201,14 +201,12 @@ void ARHIDX12::Update(int CBIndex, ARenderItem* renderItem)
 	glm::mat4x4 proj = AEngine::GetSingleton().GetScene()->GetCamera()->GetProjMatrix();
 	glm::mat4x4 view = AEngine::GetSingleton().GetScene()->GetCamera()->GetViewMatrix();
 
-	glm::mat4x4 world = renderItem->mWorld;
-
 	PassConstants passContants;
 	passContants.viewProj = glm::transpose(proj * view);
 	mPassCB->CopyData(CBIndex, passContants);
 	
 	ObjectConstants objConstants;
-	objConstants.world = glm::transpose(world);
+	objConstants.world = renderItem->mWorld;
 	mObjectCB->CopyData(CBIndex, objConstants);
 }
 
@@ -563,7 +561,8 @@ void ARHIDX12::BuildShadersAndInputLayout()
 	mInputLayout =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 }
 
@@ -656,6 +655,7 @@ void ARHIDX12::BuildPSO()
 		mpsByteCode->GetBufferSize()
 	};
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.SampleMask = UINT_MAX;

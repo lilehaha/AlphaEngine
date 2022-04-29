@@ -19,6 +19,10 @@ std::unordered_map<std::string, MeshData>& ARenderScene::BuildMeshData()
 			meshData.Vertices[i].Pos.x = meshInfo->Vertices[i].x;
 			meshData.Vertices[i].Pos.y = meshInfo->Vertices[i].y;
 			meshData.Vertices[i].Pos.z = meshInfo->Vertices[i].z;
+			meshData.Vertices[i].Normal.w = meshInfo->Normals[i].w;
+			meshData.Vertices[i].Normal.x = meshInfo->Normals[i].x;
+			meshData.Vertices[i].Normal.y = meshInfo->Normals[i].y;
+			meshData.Vertices[i].Normal.z = meshInfo->Normals[i].z;
 		}
 		meshData.Indices = meshInfo->Indices;
 		mMeshDatas[Actor.first] = std::move(meshData);

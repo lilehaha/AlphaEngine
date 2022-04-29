@@ -2,7 +2,7 @@
 #include "ACameraController.h"
 #include "AEngine.h"
 
-ACameraController::ACameraController() : mCamera(nullptr), mSpeed({ 0.01f,0.01f,0.01f })
+ACameraController::ACameraController() : mCamera(nullptr), mSpeed({ 0.1f,0.1f,0.1f })
 {
 }
 
