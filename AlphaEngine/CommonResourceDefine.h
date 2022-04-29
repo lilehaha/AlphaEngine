@@ -30,7 +30,7 @@ class FTransform
 {
 public:
 	FVector4 Rotation;
-	FVector Translation;
+	FVector Location;
 	FVector Scale3D;
 };
 
@@ -40,7 +40,7 @@ struct StaticMeshInfo
 	int NumVertices = 0;
 	int NumTriangles = 0;
 	int NumIndices = 0;
-	std::vector<int32_t> Indices;
+	std::vector<uint32_t> Indices;
 	std::vector<FVector> Vertices;
 	std::vector<FVector4> Normals;
 	std::vector<FVector4> TangentXs;
@@ -55,3 +55,25 @@ struct ActorInfo
 	std::vector<FTransform> Transforms;
 };
 
+struct Vertex
+{
+	glm::vec3 Pos;
+	glm::vec4 Color;
+	glm::vec4 Normal;
+};
+
+struct MeshData
+{
+	std::vector<Vertex> Vertices;	
+	std::vector<uint32_t> Indices;	
+};
+
+struct ObjectConstants
+{
+	glm::mat4x4 world = glm::identity<glm::mat4x4>();
+};
+
+struct PassConstants
+{
+	glm::mat4x4 viewProj = glm::identity<glm::mat4x4>();
+};

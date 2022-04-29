@@ -1,29 +1,23 @@
 #pragma once
+
 #include "ARHI.h"
 #include "UploadBuffer.h"
+#include "ARenderScene.h"
 
+#include "CommonResourceDefine.h"
 using namespace DirectX;
 using namespace DirectX::PackedVector;
-struct Vertex
-{
-	glm::vec3 Pos;
-	glm::vec4 Color;
-};
-struct ObjectConstants
-{
-	glm::mat4x4 WorldViewProj = glm::identity<glm::mat4x4>();
-};
 
-class ARHIDX12 :
-    public ARHI
+
+class ARHIDX12 : public ARHI
 {
 public:
 	ARHIDX12();
 	virtual ~ARHIDX12();
     virtual bool Init() override;
 	virtual void OnResize();
-	virtual void Draw() override;
-	virtual void Update() override;
+	virtual void Draw(std::shared_ptr<ARenderScene> RenderScene) override;
+	virtual void Update(int CBIndex,ARenderItem* renderItem) override;
 
 	void SetWindow(HWND HWnd);
 	float AspectRatio() const;
@@ -46,11 +40,18 @@ private:
 
 
 	void BuildDescriptorHeaps();
-	void BuildConstantBuffers();
+	void BuildConstantBuffers(ARenderItem* renderItem);
 	void BuildRootSignature();
 	void BuildShadersAndInputLayout();
 	void BuildBoxGeometry();
 	void BuildPSO();
+
+	void BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource);
+public:
+	virtual void RenderFrameBegin(std::shared_ptr<ARenderScene> RenderScene) override;
+	virtual void CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, std::shared_ptr<ARenderScene> RenderScene) override;
+	virtual void ResetCommand(const std::string& PSOName) override;
+	virtual void ExecuteCommandLists() override;
 private:
 	HWND mhMainWnd = nullptr;
 
@@ -89,6 +90,7 @@ private:
 
 	ComPtr<ID3D12DescriptorHeap> mCbvHeap = nullptr;
 	std::unique_ptr<UploadBuffer<ObjectConstants>> mObjectCB = nullptr;
+	std::unique_ptr<UploadBuffer<PassConstants>> mPassCB = nullptr;
 	ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
 
 	ComPtr<ID3DBlob> mvsByteCode = nullptr;
@@ -103,8 +105,7 @@ private:
 	glm::mat4x4 mView = glm::identity<glm::mat4x4>();
 	glm::mat4x4 mProj = glm::identity<glm::mat4x4>();
 
-	float mTheta = 1.5f * XM_PI;
-	float mPhi = XM_PIDIV4;
-	float mRadius = 5.0f;
+	int mHeapIndex = 0;
+	int mEleIndex = 0;
 };
 

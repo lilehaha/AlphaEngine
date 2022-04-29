@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ABuffer.h" />
     <ClInclude Include="ACameraController.h" />
     <ClInclude Include="Actor.h" />
     <ClInclude Include="ADefine.h" />
@@ -156,6 +157,9 @@
     <ClInclude Include="AInput.h" />
     <ClInclude Include="AInputWin32.h" />
     <ClInclude Include="ARenderer.h" />
+    <ClInclude Include="ARenderItem.h" />
+    <ClInclude Include="ARenderResource.h" />
+    <ClInclude Include="AResource.h" />
     <ClInclude Include="ARHI.h" />
     <ClInclude Include="ARHIDX12.h" />
     <ClInclude Include="AScene.h" />
@@ -169,6 +173,7 @@
     <ClInclude Include="InputBuilder.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="MathHelper.h" />
+    <ClInclude Include="ARenderScene.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RHIBuilder.h" />
     <ClInclude Include="Singleton.h" />
@@ -180,6 +185,7 @@
     <ResourceCompile Include="AlphaEngine.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ABuffer.cpp" />
     <ClCompile Include="ACameraController.cpp" />
     <ClCompile Include="Actor.cpp" />
     <ClCompile Include="AEngine.cpp" />
@@ -188,6 +194,9 @@
     <ClCompile Include="AGameTimer.cpp" />
     <ClCompile Include="AInputWin32.cpp" />
     <ClCompile Include="ARenderer.cpp" />
+    <ClCompile Include="ARenderItem.cpp" />
+    <ClCompile Include="ARenderResource.cpp" />
+    <ClCompile Include="AResource.cpp" />
     <ClCompile Include="ARHI.cpp" />
     <ClCompile Include="ARHIDX12.cpp" />
     <ClCompile Include="AScene.cpp" />
@@ -200,6 +209,7 @@
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathHelper.cpp" />
+    <ClCompile Include="ARenderScene.cpp" />
     <ClCompile Include="RHIBuilder.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

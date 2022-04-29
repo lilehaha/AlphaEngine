@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPreInstance, LPSTR lpCmdLine,
 		std::unique_ptr<AGameInstance> mGameInstance = std::make_unique<AGameInstance>();
 		mGameInstance->Init(hInstance);
 		mGameInstance->UpDate();
-		mGameInstance->Destroy();
+		//mGameInstance->Destroy();
 		return 0;
 	}
 	catch (DxException& e)

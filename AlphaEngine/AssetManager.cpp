@@ -60,6 +60,18 @@ void AssetManager::LoadStaticMesh(std::string& FilePath)
 	mMeshInfo.insert({std::string(meshInfo->Name).c_str(), std::move(meshInfo)});
 }
 
+StaticMeshInfo* AssetManager::FindAssetByActor(ActorInfo& Actor)
+{
+	std::string str(Actor.StaticMeshNames[0].c_str());
+	str.resize(str.size());
+	auto iter = mMeshInfo.find(str);
+
+	if (iter != mMeshInfo.end()) {
+		return iter->second;
+	}
+	return nullptr;
+}
+
 //StaticMeshInfo AssetManager::GetAssetByName(const std::string& name)
 //{
 //	return mMeshInfo;

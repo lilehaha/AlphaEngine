@@ -1,5 +1,5 @@
 #pragma once
-#include "stdafx.h"
+
 #include "ACamera.h"
 #include "ACameraController.h"
 #include "Actor.h"
@@ -13,6 +13,7 @@ public:
 	std::shared_ptr<ACamera> GetCamera();
 
 	bool LoadScene(const std::string& Path);
+	std::unordered_map<std::string, ActorInfo*>& GetAllActor();
 public:
 	std::shared_ptr<ACamera> mCamera;
 	std::unique_ptr<ACameraController> mCameraController;

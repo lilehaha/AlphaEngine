@@ -2,7 +2,6 @@
 #include "AEngine.h"
 #include "WindowBuilder.h"
 
-
 AEngine::AEngine()
 {
 #ifdef PlatformWindows
@@ -39,8 +38,8 @@ bool AEngine::Init()
 
 	mAssetManager = std::make_shared<AssetManager>();
 	mScene = std::make_shared<AScene>();
-
 	mRender = std::make_unique<ARenderer>();
+
 	if (!mRender->Init())
 	{
 		return false;
@@ -97,6 +96,7 @@ void AEngine::Start()
 	mTimer.Reset();
 	mTimer.Start();
 	IsRunning = true;
+	mRender->RenderStart();
 	while (IsRunning && mWindow->Run())
 	{
 		Tick();

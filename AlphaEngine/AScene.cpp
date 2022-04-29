@@ -83,3 +83,8 @@ bool AScene::LoadScene(const std::string& Path)
 
 	return true;
 }
+
+std::unordered_map<std::string, ActorInfo*>& AScene::GetAllActor()
+{
+	return mActors;
+}
