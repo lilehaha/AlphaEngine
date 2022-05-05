@@ -43,7 +43,7 @@ private:
 	void BuildConstantBuffers(ARenderItem* renderItem);
 	void BuildRootSignature();
 	void BuildShadersAndInputLayout();
-	void BuildBoxGeometry();
+	
 	void BuildPSO();
 
 	void BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource);
@@ -98,7 +98,6 @@ private:
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
 
-	std::unique_ptr<MeshGeometry> mBoxGeo = nullptr;
 	ComPtr<ID3D12PipelineState> mPSO = nullptr;
 
 	glm::mat4x4 mWorld = glm::identity<glm::mat4x4>();
@@ -107,5 +106,7 @@ private:
 
 	int mHeapIndex = 0;
 	int mEleIndex = 0;
+
+	float mTime;
 };
 

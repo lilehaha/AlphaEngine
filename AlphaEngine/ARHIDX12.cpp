@@ -197,16 +197,19 @@ void ARHIDX12::Update(int CBIndex, ARenderItem* renderItem)
 {
 	glm::vec3 CamPos = AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition();
 	AEngine::GetSingleton().GetScene()->GetCamera()->UpdateViewMatrix();
-
+	
 	glm::mat4x4 proj = AEngine::GetSingleton().GetScene()->GetCamera()->GetProjMatrix();
 	glm::mat4x4 view = AEngine::GetSingleton().GetScene()->GetCamera()->GetViewMatrix();
 
 	PassConstants passContants;
 	passContants.viewProj = glm::transpose(proj * view);
+	mTime = AEngine::GetSingleton().GetTotalTime();
+	passContants.Time = mTime;
 	mPassCB->CopyData(CBIndex, passContants);
 	
 	ObjectConstants objConstants;
 	objConstants.world = renderItem->mWorld;
+	objConstants.Rotation = renderItem->mRotation;
 	mObjectCB->CopyData(CBIndex, objConstants);
 }
 
@@ -564,78 +567,6 @@ void ARHIDX12::BuildShadersAndInputLayout()
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
-}
-
-void ARHIDX12::BuildBoxGeometry()
-{
-	std::array<Vertex, 8> vertices =
-	{
-		Vertex({ glm::vec3(-1.0f, -1.0f, -1.0f), {1,1,1,1} }),
-		Vertex({ glm::vec3(-1.0f, +1.0f, -1.0f), {0,0,0,1} }),
-		Vertex({ glm::vec3(+1.0f, +1.0f, -1.0f), {0,0,0,1} }),
-		Vertex({ glm::vec3(+1.0f, -1.0f, -1.0f), {0,0,0,1} }),
-		Vertex({ glm::vec3(-1.0f, -1.0f, +1.0f), {0,0,0,1} }),
-		Vertex({ glm::vec3(-1.0f, +1.0f, +1.0f), {0,0,0,1} }),
-		Vertex({ glm::vec3(+1.0f, +1.0f, +1.0f), {0,0,0,1} }),
-		Vertex({ glm::vec3(+1.0f, -1.0f, +1.0f), {0,0,0,1} })
-	};
-
-	std::array<std::uint16_t, 36> indices =
-	{
-		// front face
-		0, 1, 2,
-		0, 2, 3,
-
-		// back face
-		4, 6, 5,
-		4, 7, 6,
-
-		// left face
-		4, 5, 1,
-		4, 1, 0,
-
-		// right face
-		3, 2, 6,
-		3, 6, 7,
-
-		// top face
-		1, 5, 6,
-		1, 6, 2,
-
-		// bottom face
-		4, 0, 3,
-		4, 3, 7
-	};
-
-	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
-	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
-
-	mBoxGeo = std::make_unique<MeshGeometry>();
-	mBoxGeo->Name = "boxGeo";
-
-	ThrowIfFailed(D3DCreateBlob(vbByteSize, &mBoxGeo->VertexBufferCPU));
-	CopyMemory(mBoxGeo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
-
-	ThrowIfFailed(D3DCreateBlob(ibByteSize, &mBoxGeo->IndexBufferCPU));
-	CopyMemory(mBoxGeo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
-
-	mBoxGeo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), vertices.data(), vbByteSize, mBoxGeo->VertexBufferUploader);
-
-	mBoxGeo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), indices.data(), ibByteSize, mBoxGeo->IndexBufferUploader);
-
-	mBoxGeo->VertexByteStride = sizeof(Vertex);
-	mBoxGeo->VertexBufferByteSize = vbByteSize;
-	mBoxGeo->IndexFormat = DXGI_FORMAT_R16_UINT;
-	mBoxGeo->IndexBufferByteSize = ibByteSize;
-
-	SubmeshGeometry submesh;
-	submesh.IndexCount = (UINT)indices.size();
-	submesh.StartIndexLocation = 0;
-	submesh.BaseVertexLocation = 0;
-
-	mBoxGeo->DrawArgs["box"] = submesh;
 }
 
 void ARHIDX12::BuildPSO()

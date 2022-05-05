@@ -27,6 +27,7 @@ public:
 	std::shared_ptr<AWindow> GetWindow();
 	std::shared_ptr<AScene> GetScene();
 	std::shared_ptr<AssetManager> GetAssetManager();
+	float GetTotalTime();
 
 	EPlatform GetCurrentPlatform();
 

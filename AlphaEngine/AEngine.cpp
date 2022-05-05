@@ -86,6 +86,11 @@ std::shared_ptr<AssetManager> AEngine::GetAssetManager()
 	return mAssetManager;
 }
 
+float AEngine::GetTotalTime()
+{
+	return mTimer.TotalTime();
+}
+
 EPlatform AEngine::GetCurrentPlatform()
 {
 	return mCurPlatform;
