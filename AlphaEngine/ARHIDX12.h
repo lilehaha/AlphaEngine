@@ -106,7 +106,5 @@ private:
 
 	int mHeapIndex = 0;
 	int mEleIndex = 0;
-
-	float mTime;
 };
 

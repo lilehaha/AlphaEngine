@@ -4,7 +4,7 @@
 
 void AGameLogic::Init()
 {
-	LoadMap("Data\\Map\\Minimal_Default.dat");
+	LoadMap("..\\AlphaEngine\\Data\\Map\\Minimal_Default.dat");
 }
 
 bool AGameLogic::LoadMap(const std::string& Path)

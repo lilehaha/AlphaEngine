@@ -77,7 +77,7 @@ bool AScene::LoadScene(const std::string& Path)
 	//LoadMeshData
 	for (auto name : meshName)
 	{
-		std::string meshPath = std::string("Data\\Mesh\\").append(name.c_str()).append(".dat");
+		std::string meshPath = std::string("..\\AlphaEngine\\Data\\Mesh\\").append(name.c_str()).append(".dat");
 		AEngine::GetSingleton().GetAssetManager()->LoadStaticMesh(meshPath);
 	}
 

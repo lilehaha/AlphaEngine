@@ -50,9 +50,9 @@ bool AEngine::Init()
 void AEngine::Tick()
 {
 	mTimer.Tick();
+	mWindow->CalculateFrameStats(mTimer);
 	mScene->Update();
 	mRender->Render();
-	mWindow->CalculateFrameStats(mTimer);
 }
 
 void AEngine::Destory()
@@ -68,6 +68,10 @@ void AEngine::Destory()
 	if (mScene != nullptr)
 	{
 		mScene = nullptr;
+	}
+	if (mAssetManager != nullptr)
+	{
+		mAssetManager == nullptr;
 	}
 }
 
