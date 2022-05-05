@@ -53,8 +53,8 @@ void ACameraController::Roll(float Angle)
 
 void ACameraController::Yaw(float Angle)
 {
-	mCamera->SetRight(glm::rotate(mCamera->GetRight(), Angle, mCamera->GetUp()));
-	mCamera->SetForward(glm::rotate(mCamera->GetForward(), Angle, mCamera->GetUp()));	
+	mCamera->SetRight(glm::rotate(mCamera->GetRight(), Angle, glm::vec3(0, 0, 1)));
+	mCamera->SetForward(glm::rotate(mCamera->GetForward(), Angle, glm::vec3(0, 0, 1)));
 
 	mCamera->SetDirty(true);
 }
@@ -111,3 +111,4 @@ glm::vec3 ACameraController::VectorMultiplyAdd(glm::vec3 MultiplyV1, glm::vec3 M
 
 	return result;
 }
+

@@ -38,9 +38,9 @@ VertexOut VS(VertexIn vin)
 
 	float3 PosW = mul(float4(vin.PosL, 1.0f), gWorld).xyz;
 
-	PosW.x += sin(gTime)* vout.Normal.x * 10;
-	PosW.y += sin(gTime) * vout.Normal.y * 10;
-	PosW.z += sin(gTime) * vout.Normal.z * 10;
+	//PosW.x += sin(gTime) * vout.Normal.x * 10;
+	//PosW.y += sin(gTime) * vout.Normal.y * 10;
+	//PosW.z += sin(gTime) * vout.Normal.z * 10;
 
 	vout.PosH = mul(float4(PosW, 1.0f), gViewProj);
 
