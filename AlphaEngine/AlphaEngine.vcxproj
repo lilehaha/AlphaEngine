@@ -169,6 +169,7 @@
     <ClInclude Include="d3dUtil.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="AWindow.h" />
+    <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="InputBuilder.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="ARenderScene.h" />
@@ -201,6 +202,7 @@
     <ClCompile Include="AWindowWin32.cpp" />
     <ClCompile Include="ACamera.cpp" />
     <ClCompile Include="d3dUtil.cpp" />
+    <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="InputBuilder.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="ARenderScene.cpp" />
@@ -215,6 +217,7 @@
     <None Include="Shaders\Color.hlsl">
       <FileType>Document</FileType>
     </None>
+    <None Include="Shaders\CommonHeader.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

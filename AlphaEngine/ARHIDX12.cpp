@@ -29,9 +29,11 @@ bool ARHIDX12::Init()
 	mObjectCB = std::make_unique<UploadBuffer<ObjectConstants>>(md3dDevice.Get(), 1000, true);
 	mPassCB = std::make_unique<UploadBuffer<PassConstants>>(md3dDevice.Get(), 1000, true);
 
-	BuildDescriptorHeaps();
-	BuildRootSignature();
 	BuildShadersAndInputLayout();
+
+	BuildDescriptorHeaps();
+	
+	BuildRootSignature();
 	BuildPSO();
 	// Execute the initialization commands.
 	ThrowIfFailed(mCommandList->Close());
@@ -159,15 +161,16 @@ void ARHIDX12::Draw(std::shared_ptr<ARenderScene> RenderScene)
 		mCommandList->IASetVertexBuffers(0, 1, &rt.second->mGeo->VertexBufferView());
 		mCommandList->IASetIndexBuffer(&rt.second->mGeo->IndexBufferView());
 
+		SetGraphicsRootDescriptorTable(rt.second.get());
 
-		auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
+		/*auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
 		handle.Offset(rt.second->mCBHeapIndex, mCbvSrvUavDescriptorSize);
-		mCommandList->SetGraphicsRootDescriptorTable(0, 
+		mCommandList->SetGraphicsRootDescriptorTable(0,
 			handle);
 		auto handle2 = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
 		handle2.Offset(rt.second->mPassHeapIndex, mCbvSrvUavDescriptorSize);
-		mCommandList->SetGraphicsRootDescriptorTable(1, 
-			handle2);
+		mCommandList->SetGraphicsRootDescriptorTable(1,
+			handle2);*/
 
 		mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -193,20 +196,20 @@ void ARHIDX12::Draw(std::shared_ptr<ARenderScene> RenderScene)
 
 void ARHIDX12::Update(int CBIndex, ARenderItem* renderItem)
 {
-	glm::vec3 CamPos = AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition();
+	mCameraLoc = AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition();
 	AEngine::GetSingleton().GetScene()->GetCamera()->UpdateViewMatrix();
 	
 	glm::mat4x4 proj = AEngine::GetSingleton().GetScene()->GetCamera()->GetProjMatrix();
 	glm::mat4x4 view = AEngine::GetSingleton().GetScene()->GetCamera()->GetViewMatrix();
 
 	PassConstants passContants;
-	passContants.viewProj = glm::transpose(proj * view);
-	passContants.Time = AEngine::GetSingleton().GetTotalTime();
 	mPassCB->CopyData(CBIndex, passContants);
 	
 	ObjectConstants objConstants;
 	objConstants.world = renderItem->mWorld;
+	objConstants.viewProj = glm::transpose(proj * view);
 	objConstants.Rotation = renderItem->mRotation;
+	objConstants.Time = AEngine::GetSingleton().GetTotalTime();
 	mObjectCB->CopyData(CBIndex, objConstants);
 }
 
@@ -516,39 +519,45 @@ void ARHIDX12::BuildConstantBuffers(ARenderItem* renderItem)
 
 void ARHIDX12::BuildRootSignature()
 {
-	// Root parameter can be a table, root descriptor or root constants.
-	CD3DX12_ROOT_PARAMETER slotRootParameter[2];
+	//// Root parameter can be a table, root descriptor or root constants.
+	//CD3DX12_ROOT_PARAMETER slotRootParameter[2];
 
-	// Create a single descriptor table of CBVs.
-	CD3DX12_DESCRIPTOR_RANGE cbvTable;
-	cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
-	slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable);	
+	//// Create a single descriptor table of CBVs.
+	//CD3DX12_DESCRIPTOR_RANGE cbvTable;
+	//cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+	//slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable);	
+	//
+	//CD3DX12_DESCRIPTOR_RANGE cbvTable1;
+	//cbvTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
+	//slotRootParameter[1].InitAsDescriptorTable(1, &cbvTable1);
+
+	//// A root signature is an array of root parameters.
+	//CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 0, nullptr,
+	//	D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	//// create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+	//ComPtr<ID3DBlob> serializedRootSig = nullptr;
+	//ComPtr<ID3DBlob> errorBlob = nullptr;
+	//HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,
+	//	serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+
+	//if (errorBlob != nullptr)
+	//{
+	//	::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+	//}
+	//ThrowIfFailed(hr);
+
+	//ThrowIfFailed(md3dDevice->CreateRootSignature(
+	//	0,
+	//	serializedRootSig->GetBufferPointer(),
+	//	serializedRootSig->GetBufferSize(),
+	//	IID_PPV_ARGS(&mRootSignature)));
 	
-	CD3DX12_DESCRIPTOR_RANGE cbvTable1;
-	cbvTable1.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
-	slotRootParameter[1].InitAsDescriptorTable(1, &cbvTable1);
-
-	// A root signature is an array of root parameters.
-	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 0, nullptr,
-		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-	// create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
-	ComPtr<ID3DBlob> serializedRootSig = nullptr;
-	ComPtr<ID3DBlob> errorBlob = nullptr;
-	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,
-		serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
-
-	if (errorBlob != nullptr)
-	{
-		::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-	}
-	ThrowIfFailed(hr);
-
 	ThrowIfFailed(md3dDevice->CreateRootSignature(
-		0,
-		serializedRootSig->GetBufferPointer(),
-		serializedRootSig->GetBufferSize(),
-		IID_PPV_ARGS(&mRootSignature)));
+			0,
+			mvsByteCode->GetBufferPointer(),
+			mvsByteCode->GetBufferSize(),
+			IID_PPV_ARGS(&mRootSignature)));
 }
 
 void ARHIDX12::BuildShadersAndInputLayout()
@@ -556,7 +565,7 @@ void ARHIDX12::BuildShadersAndInputLayout()
 	HRESULT hr = S_OK;
 
 	mvsByteCode = d3dUtil::CompileShader(L"..\\AlphaEngine\\Shaders\\Color.hlsl", nullptr, "VS", "vs_5_0");
-	mpsByteCode = d3dUtil::CompileShader(L"..\\AlphaEngine\\Shaders\\color.hlsl", nullptr, "PS", "ps_5_0");
+	mpsByteCode = d3dUtil::CompileShader(L"..\\AlphaEngine\\Shaders\\Color.hlsl", nullptr, "PS", "ps_5_0");
 
 	mInputLayout =
 	{
@@ -594,6 +603,27 @@ void ARHIDX12::BuildPSO()
 	psoDesc.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
 	psoDesc.DSVFormat = mDepthStencilFormat;
 	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSO)));
+}
+
+void ARHIDX12::SetGraphicsRootDescriptorTable(ARenderItem* RenderItem)
+{
+	SetGraphicsRoot32BitConstants(1080,1920);
+
+	auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
+	handle.Offset(RenderItem->mCBHeapIndex, mCbvSrvUavDescriptorSize);
+	mCommandList->SetGraphicsRootDescriptorTable(1,
+		handle);
+	/*auto handle2 = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
+	handle2.Offset(RenderItem->mPassHeapIndex, mCbvSrvUavDescriptorSize);
+	mCommandList->SetGraphicsRootDescriptorTable(2,
+		handle2);*/
+}
+
+void ARHIDX12::SetGraphicsRoot32BitConstants(int Width, int Height)
+{
+	//int renderTargetSize[4] = { AEngine::GetSingleton().GetWindow()->GetWidth(), AEngine::GetSingleton().GetWindow()->GetHeight(),Width,Height };
+	//mCommandList->SetGraphicsRoot32BitConstants(0, 4, &renderTargetSize, 0);
+	mCommandList->SetGraphicsRoot32BitConstants(0, 3, &mCameraLoc, 0);
 }
 
 void ARHIDX12::BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource)

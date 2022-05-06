@@ -20,7 +20,7 @@ public:
 
 	void Update();
 	void SetCameraObj(std::shared_ptr<ACamera> Camera);
-	
+
 	glm::vec3 VectorMultiplyAdd(glm::vec3 MultiplyV1, glm::vec3 MultiplyV2, glm::vec3 addV);
 private:
 	std::shared_ptr<ACamera> mCamera;

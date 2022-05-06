@@ -43,8 +43,10 @@ private:
 	void BuildConstantBuffers(ARenderItem* renderItem);
 	void BuildRootSignature();
 	void BuildShadersAndInputLayout();
-	
 	void BuildPSO();
+
+	void SetGraphicsRootDescriptorTable(ARenderItem* RenderItem);
+	void SetGraphicsRoot32BitConstants(int Width, int Height);
 
 	void BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource);
 public:
@@ -106,5 +108,7 @@ private:
 
 	int mHeapIndex = 0;
 	int mEleIndex = 0;
+
+	glm::vec3 mCameraLoc;
 };
 

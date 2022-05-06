@@ -71,11 +71,12 @@ struct MeshData
 struct ObjectConstants
 {
 	glm::mat4x4 world = glm::identity<glm::mat4x4>();
+	glm::mat4x4 viewProj = glm::identity<glm::mat4x4>();
 	glm::mat4x4 Rotation = glm::identity<glm::mat4x4>();
+	float Time;
 };
 
 struct PassConstants
 {
-	glm::mat4x4 viewProj = glm::identity<glm::mat4x4>();
-	float Time;
+	
 };

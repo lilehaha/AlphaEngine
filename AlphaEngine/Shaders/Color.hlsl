@@ -3,17 +3,21 @@
 //
 // Transforms and colors geometry.
 //***************************************************************************************
+#include "CommonHeader.hlsli"
 
-cbuffer cbPerObject : register(b0)
+float3 CameraLoc : register(b0);
+
+cbuffer cbPerObject : register(b1)
 {
 	float4x4 gWorld;
+	float4x4 gViewProj;
 	float4x4 gRotation;
+	float gTime;
 };
 
-cbuffer cbPass : register(b1)
+cbuffer cbPass : register(b2)
 {
-	float4x4 gViewProj;
-	float gTime;
+	
 };
 
 struct VertexIn
@@ -30,6 +34,7 @@ struct VertexOut
 	float4 Normal : NORMAL;
 };
 
+[RootSignature(Common_RootSig)]
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
@@ -47,6 +52,7 @@ VertexOut VS(VertexIn vin)
 	return vout;
 }
 
+[RootSignature(Common_RootSig)]
 float4 PS(VertexOut pin) : SV_Target
 {
 	return pow(pin.Normal * 0.5f + 0.5f, 1 / 2.2f);
