@@ -155,6 +155,8 @@
     <ClInclude Include="AGameTimer.h" />
     <ClInclude Include="AInput.h" />
     <ClInclude Include="AInputWin32.h" />
+    <ClInclude Include="AMaterial.h" />
+    <ClInclude Include="AMaterialManager.h" />
     <ClInclude Include="ARenderer.h" />
     <ClInclude Include="ARenderItem.h" />
     <ClInclude Include="ARenderResource.h" />
@@ -162,6 +164,8 @@
     <ClInclude Include="ARHI.h" />
     <ClInclude Include="ARHIDX12.h" />
     <ClInclude Include="AScene.h" />
+    <ClInclude Include="AShader.h" />
+    <ClInclude Include="AShaderManager.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="AWindowWin32.h" />
     <ClInclude Include="ACamera.h" />
@@ -190,6 +194,8 @@
     <ClCompile Include="AEngine.cpp" />
     <ClCompile Include="AGameTimer.cpp" />
     <ClCompile Include="AInputWin32.cpp" />
+    <ClCompile Include="AMaterial.cpp" />
+    <ClCompile Include="AMaterialManager.cpp" />
     <ClCompile Include="ARenderer.cpp" />
     <ClCompile Include="ARenderItem.cpp" />
     <ClCompile Include="ARenderResource.cpp" />
@@ -197,6 +203,8 @@
     <ClCompile Include="ARHI.cpp" />
     <ClCompile Include="ARHIDX12.cpp" />
     <ClCompile Include="AScene.cpp" />
+    <ClCompile Include="AShader.cpp" />
+    <ClCompile Include="AShaderManager.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="AWindow.cpp" />
     <ClCompile Include="AWindowWin32.cpp" />
