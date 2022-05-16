@@ -12,19 +12,30 @@ cbuffer cbPerObject : register(b1)
 	float4x4 gWorld;
 	float4x4 gViewProj;
 	float4x4 gRotation;
+	float4x4 gTexTransform;
 	float gTime;
 };
 
-cbuffer cbPass : register(b2)
+cbuffer cbMat : register(b2)
 {
-	
+	float4 gDiffuseAlbedo;
+	float3 gFresnelR0;
+	float gRoughness;
+	float4x4 gMatTransform;
 };
+
+Texture2D gDiffuseMap : register(t0);
+Texture2D gNormalMap : register(t1);
+
+SamplerState gSamplerWrap : register(s0);
+
 
 struct VertexIn
 {
 	float3 PosL  : POSITION;
 	float4 Color : COLOR;
 	float4 Normal : NORMAL;
+	float4 UV : UV;
 };
 
 struct VertexOut
@@ -32,6 +43,7 @@ struct VertexOut
 	float4 PosH  : SV_POSITION;
 	float4 Color : COLOR;
 	float4 Normal : NORMAL;
+	float4 UV : UV;
 };
 
 [RootSignature(Common_RootSig)]
@@ -49,13 +61,17 @@ VertexOut VS(VertexIn vin)
 
 	vout.PosH = mul(float4(PosW, 1.0f), gViewProj);
 
+	vout.UV = vin.UV;
+
 	return vout;
 }
 
 [RootSignature(Common_RootSig)]
 float4 PS(VertexOut pin) : SV_Target
 {
-	return pow(pin.Normal * 0.5f + 0.5f, 1 / 2.2f);
+	float4 diffuseAlbedo = gDiffuseMap.Sample(gSamplerWrap, pin.UV);
+	return pow(diffuseAlbedo * 0.5f + 0.5f, 1 / 2.2f);
+	//return pow(pin.Normal * 0.5f + 0.5f, 1 / 2.2f);
 }
 
 

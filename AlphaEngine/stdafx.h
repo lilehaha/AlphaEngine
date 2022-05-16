@@ -22,6 +22,7 @@
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 
+#include "DDSTextureLoader.h"
 #include "MathHelper.h"
 #include "d3dx12.h"
 #include "d3dUtil.h"

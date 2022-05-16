@@ -14,10 +14,10 @@ class ARHIDX12 : public ARHI
 public:
 	ARHIDX12();
 	virtual ~ARHIDX12();
-    virtual bool Init() override;
+	virtual bool Init() override;
 	virtual void OnResize();
 	virtual void Draw(std::shared_ptr<ARenderScene> RenderScene) override;
-	virtual void Update(int CBIndex,ARenderItem* renderItem) override;
+	virtual void Update(int CBIndex, ARenderItem* renderItem) override;
 
 	void SetWindow(HWND HWnd);
 	float AspectRatio() const;
@@ -41,6 +41,7 @@ private:
 
 	void BuildDescriptorHeaps();
 	void BuildConstantBuffers(ARenderItem* renderItem);
+	void BuildShaderResourceView(const std::string& ActorName, ARenderItem* RenderItem, const std::string& MeshName, std::shared_ptr<ARenderScene> RenderScene);
 	void BuildRootSignature();
 	void BuildShadersAndInputLayout();
 	void BuildPSO();
@@ -54,6 +55,7 @@ public:
 	virtual void CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, std::shared_ptr<ARenderScene> RenderScene) override;
 	virtual void ResetCommand(const std::string& PSOName) override;
 	virtual void ExecuteCommandLists() override;
+	virtual void CreateTextureResource(std::shared_ptr<ARenderScene> RenderScene, std::shared_ptr<ATexture> Texture) override;
 private:
 	HWND mhMainWnd = nullptr;
 
@@ -71,7 +73,7 @@ private:
 	ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
 	static const int SwapChainBufferCount = 2;
-	int mCurrBackBuffer = 0; 
+	int mCurrBackBuffer = 0;
 	ComPtr<ID3D12Resource> mSwapChainBuffer[SwapChainBufferCount];
 	ComPtr<ID3D12Resource> mDepthStencilBuffer;
 
@@ -90,9 +92,9 @@ private:
 	int mClientWidth;
 	int mClientHeight;
 
-	ComPtr<ID3D12DescriptorHeap> mCbvHeap = nullptr;
+	ComPtr<ID3D12DescriptorHeap> mCbvSrvHeap = nullptr;
 	std::unique_ptr<UploadBuffer<ObjectConstants>> mObjectCB = nullptr;
-	std::unique_ptr<UploadBuffer<PassConstants>> mPassCB = nullptr;
+	std::unique_ptr<UploadBuffer<MatConstants>> mMatCB = nullptr;
 	ComPtr<ID3D12RootSignature> mRootSignature = nullptr;
 
 	ComPtr<ID3DBlob> mvsByteCode = nullptr;

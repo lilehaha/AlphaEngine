@@ -72,7 +72,27 @@ StaticMeshInfo* AssetManager::FindAssetByActor(ActorInfo& Actor)
 	return nullptr;
 }
 
-//StaticMeshInfo AssetManager::GetAssetByName(const std::string& name)
-//{
-//	return mMeshInfo;
-//}
+std::vector<std::shared_ptr<ATexture>>& AssetManager::GetDiffuseTextures()
+{
+	return mDiffuseTextures;
+}
+
+std::vector<std::shared_ptr<ATexture>>& AssetManager::GetNormalTextures()
+{
+	return mNormalTextures;
+}
+
+void AssetManager::LoadTextures()
+{
+	auto tex_D_0 = std::make_unique<ATexture>(E_TexType::Diffuse);
+	//tex_D_0->mName = "Floor_400x400";
+	tex_D_0->mName = "Null";
+	tex_D_0->mFilePath = L"..\\AlphaEngine\\Data\\Textures\\Stone_D.dds";
+	mDiffuseTextures.push_back(std::move(tex_D_0));
+	
+	auto tex_N_0 = std::make_unique<ATexture>(E_TexType::Normal);
+	tex_N_0->mName = "Null";
+	tex_N_0->mFilePath = L"..\\AlphaEngine\\Data\\Textures\\Stone_N.dds";
+	mNormalTextures.push_back(std::move(tex_N_0));
+}
+

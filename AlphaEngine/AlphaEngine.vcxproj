@@ -167,6 +167,7 @@
     <ClInclude Include="AShader.h" />
     <ClInclude Include="AShaderManager.h" />
     <ClInclude Include="AssetManager.h" />
+    <ClInclude Include="ATexture.h" />
     <ClInclude Include="AWindowWin32.h" />
     <ClInclude Include="ACamera.h" />
     <ClInclude Include="CommonResourceDefine.h" />
@@ -206,6 +207,7 @@
     <ClCompile Include="AShader.cpp" />
     <ClCompile Include="AShaderManager.cpp" />
     <ClCompile Include="AssetManager.cpp" />
+    <ClCompile Include="ATexture.cpp" />
     <ClCompile Include="AWindow.cpp" />
     <ClCompile Include="AWindowWin32.cpp" />
     <ClCompile Include="ACamera.cpp" />

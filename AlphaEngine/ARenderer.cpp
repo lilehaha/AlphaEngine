@@ -39,9 +39,15 @@ void ARenderer::Render()
 
 void ARenderer::RenderStart()
 {
+	for (auto&& dTexture : AEngine::GetSingleton().GetAssetManager()->GetDiffuseTextures()) {
+		mRHI->CreateTextureResource(mRenderScene, dTexture);
+	}
+	for (auto&& nTexture : AEngine::GetSingleton().GetAssetManager()->GetNormalTextures()) {
+		mRHI->CreateTextureResource(mRenderScene, nTexture);
+	}
+
 	mRHI->ResetCommand("Null");
 	mRHI->RenderFrameBegin(mRenderScene);
-
 
 	for (auto&& actorPair : AEngine::GetSingleton().GetScene()->GetAllActor())
 	{

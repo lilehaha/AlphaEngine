@@ -27,7 +27,7 @@ bool ARHIDX12::Init()
 	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
 	mObjectCB = std::make_unique<UploadBuffer<ObjectConstants>>(md3dDevice.Get(), 1000, true);
-	mPassCB = std::make_unique<UploadBuffer<PassConstants>>(md3dDevice.Get(), 1000, true);
+	mMatCB = std::make_unique<UploadBuffer<MatConstants>>(md3dDevice.Get(), 1000, true);
 
 	BuildShadersAndInputLayout();
 
@@ -151,7 +151,7 @@ void ARHIDX12::Draw(std::shared_ptr<ARenderScene> RenderScene)
 	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
 
 
-	ID3D12DescriptorHeap* descriptorHeaps[] = { mCbvHeap.Get() };
+	ID3D12DescriptorHeap* descriptorHeaps[] = { mCbvSrvHeap.Get() };
 	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
 	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
@@ -162,15 +162,6 @@ void ARHIDX12::Draw(std::shared_ptr<ARenderScene> RenderScene)
 		mCommandList->IASetIndexBuffer(&rt.second->mGeo->IndexBufferView());
 
 		SetGraphicsRootDescriptorTable(rt.second.get());
-
-		/*auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
-		handle.Offset(rt.second->mCBHeapIndex, mCbvSrvUavDescriptorSize);
-		mCommandList->SetGraphicsRootDescriptorTable(0,
-			handle);
-		auto handle2 = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
-		handle2.Offset(rt.second->mPassHeapIndex, mCbvSrvUavDescriptorSize);
-		mCommandList->SetGraphicsRootDescriptorTable(1,
-			handle2);*/
 
 		mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -202,8 +193,8 @@ void ARHIDX12::Update(int CBIndex, ARenderItem* renderItem)
 	glm::mat4x4 proj = AEngine::GetSingleton().GetScene()->GetCamera()->GetProjMatrix();
 	glm::mat4x4 view = AEngine::GetSingleton().GetScene()->GetCamera()->GetViewMatrix();
 
-	PassConstants passContants;
-	mPassCB->CopyData(CBIndex, passContants);
+	MatConstants matContants;
+	mMatCB->CopyData(CBIndex, matContants);
 	
 	ObjectConstants objConstants;
 	objConstants.world = renderItem->mWorld;
@@ -470,13 +461,13 @@ void ARHIDX12::LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format)
 
 void ARHIDX12::BuildDescriptorHeaps()
 {
-	D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
-	cbvHeapDesc.NumDescriptors = 1000;
-	cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	cbvHeapDesc.NodeMask = 0;
-	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&cbvHeapDesc,
-		IID_PPV_ARGS(&mCbvHeap)));
+	D3D12_DESCRIPTOR_HEAP_DESC cbvsrvHeapDesc;
+	cbvsrvHeapDesc.NumDescriptors = 1000;
+	cbvsrvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	cbvsrvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	cbvsrvHeapDesc.NodeMask = 0;
+	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&cbvsrvHeapDesc,
+		IID_PPV_ARGS(&mCbvSrvHeap)));
 }
 
 void ARHIDX12::BuildConstantBuffers(ARenderItem* renderItem)
@@ -485,7 +476,7 @@ void ARHIDX12::BuildConstantBuffers(ARenderItem* renderItem)
 	D3D12_GPU_VIRTUAL_ADDRESS cbAddress = mObjectCB->Resource()->GetGPUVirtualAddress();
 
 	cbAddress += mEleIndex * objCBByteSize;
-	auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mCbvHeap->GetCPUDescriptorHandleForHeapStart());
+	auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mCbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
 	handle.Offset(mHeapIndex, mCbvSrvUavDescriptorSize);
 	renderItem->mCBHeapIndex = mHeapIndex;
 
@@ -497,23 +488,76 @@ void ARHIDX12::BuildConstantBuffers(ARenderItem* renderItem)
 		&cbvDesc,
 		handle);
 
-	UINT passConstSize = d3dUtil::CalcConstantBufferByteSize(sizeof(PassConstants));
+	UINT matConstSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
 
-	D3D12_GPU_VIRTUAL_ADDRESS passCB_Address;
-	passCB_Address = mPassCB->Resource()->GetGPUVirtualAddress();
-	passCB_Address += mEleIndex * passConstSize;
+	D3D12_GPU_VIRTUAL_ADDRESS matCB_Address;
+	matCB_Address = mMatCB->Resource()->GetGPUVirtualAddress();
+	matCB_Address += mEleIndex * matConstSize;
 	
 	mHeapIndex++;
-	handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mCbvHeap->GetCPUDescriptorHandleForHeapStart());
+	handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(mCbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
 	handle.Offset(mHeapIndex, mCbvSrvUavDescriptorSize);
-	renderItem->mPassHeapIndex = mHeapIndex;
+	renderItem->mMatCBIndex = mHeapIndex;
 	
 	D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc1;
-	cbvDesc1.BufferLocation = passCB_Address;
-	cbvDesc1.SizeInBytes = passConstSize;
+	cbvDesc1.BufferLocation = matCB_Address;
+	cbvDesc1.SizeInBytes = matConstSize;
 	md3dDevice->CreateConstantBufferView(&cbvDesc1, handle);
 
 	mEleIndex++;
+	//mHeapIndex++;
+}
+
+void ARHIDX12::BuildShaderResourceView(const std::string& ActorName, ARenderItem* RenderItem, const std::string& MeshName, std::shared_ptr<ARenderScene> RenderScene)
+{
+	RenderItem->mSrvCBIndex = ++mHeapIndex;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor(mCbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
+	hDescriptor.Offset(mHeapIndex, mCbvSrvUavDescriptorSize);
+	std::string ResourceName;
+	std::string name(MeshName.c_str());
+	name.resize(name.size());
+
+	ComPtr<ID3D12Resource>  DiffuseTex;
+	ComPtr<ID3D12Resource>  NormalTex;
+	if (RenderScene->mDiffuseTexs.find(name) == RenderScene->mDiffuseTexs.end())
+	{
+		ResourceName = "Null";
+	}
+	else
+	{
+		ResourceName = name;
+	}
+	DiffuseTex = RenderScene->mDiffuseTexs[ResourceName]->mResource;
+	if (RenderScene->mNormalTexs.find(name) == RenderScene->mNormalTexs.end())
+	{
+		ResourceName = "Null";
+	}
+	else
+	{
+		ResourceName = name;
+	}
+	NormalTex = RenderScene->mNormalTexs[ResourceName]->mResource;
+	
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = DiffuseTex->GetDesc().Format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = DiffuseTex->GetDesc().MipLevels;
+	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+	md3dDevice->CreateShaderResourceView(DiffuseTex.Get(), &srvDesc, hDescriptor);
+
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor2(mCbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
+	hDescriptor2.Offset(++mHeapIndex, mCbvSrvUavDescriptorSize);
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc2 = {};
+	srvDesc2.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc2.Format = NormalTex->GetDesc().Format;
+	srvDesc2.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc2.Texture2D.MostDetailedMip = 0;
+	srvDesc2.Texture2D.MipLevels = NormalTex->GetDesc().MipLevels;
+	srvDesc2.Texture2D.ResourceMinLODClamp = 0.0f;
+	md3dDevice->CreateShaderResourceView(NormalTex.Get(), &srvDesc2, hDescriptor2);
+
 	mHeapIndex++;
 }
 
@@ -537,7 +581,8 @@ void ARHIDX12::BuildShadersAndInputLayout()
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "UV", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 44, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 }
 
@@ -575,14 +620,14 @@ void ARHIDX12::SetGraphicsRootDescriptorTable(ARenderItem* RenderItem)
 {
 	SetGraphicsRoot32BitConstants(1080,1920);
 
-	auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
+	auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
 	handle.Offset(RenderItem->mCBHeapIndex, mCbvSrvUavDescriptorSize);
 	mCommandList->SetGraphicsRootDescriptorTable(1,
 		handle);
-	/*auto handle2 = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvHeap->GetGPUDescriptorHandleForHeapStart());
-	handle2.Offset(RenderItem->mPassHeapIndex, mCbvSrvUavDescriptorSize);
+	auto handle2 = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
+	handle2.Offset(RenderItem->mSrvCBIndex, mCbvSrvUavDescriptorSize);
 	mCommandList->SetGraphicsRootDescriptorTable(2,
-		handle2);*/
+		handle2);
 }
 
 void ARHIDX12::SetGraphicsRoot32BitConstants(int Width, int Height)
@@ -635,10 +680,10 @@ void ARHIDX12::RenderFrameBegin(std::shared_ptr<ARenderScene> RenderResource)
 	BuildRenderItem(RenderResource);
 }
 
-void ARHIDX12::CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, std::shared_ptr<ARenderScene> sceneResource)
+void ARHIDX12::CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, std::shared_ptr<ARenderScene> RenderScene)
 {
 	BuildConstantBuffers(RenderItem);
-	//Shader
+	BuildShaderResourceView(ActorName, RenderItem, MeshName, RenderScene);
 }
 
 void ARHIDX12::ResetCommand(const std::string& PSOName)
@@ -662,4 +707,26 @@ void ARHIDX12::ExecuteCommandLists()
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
 	FlushCommandQueue();
 	//currentPSOName = "";
+}
+
+void ARHIDX12::CreateTextureResource(std::shared_ptr<ARenderScene> RenderScene, std::shared_ptr<ATexture> Texture)
+{
+	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(), mCommandList.Get(), Texture->mFilePath.c_str(), Texture->mResource, Texture->mUploadHeap));
+	
+	switch (Texture->mType)
+	{
+	case E_TexType::Diffuse:
+		RenderScene->mDiffuseTexs[Texture->mName] = std::move(Texture);
+		break;
+	case E_TexType::Normal:
+		RenderScene->mNormalTexs[Texture->mName] = std::move(Texture);
+		break;
+	default:
+		assert(0);
+		break;
+	}
+	ThrowIfFailed(mCommandList->Close());
+	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 }

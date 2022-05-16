@@ -10,7 +10,8 @@ public:
 	glm::mat4x4 mScale = glm::identity<glm::mat4x4>();
 
 	UINT mCBHeapIndex = -1;
-	UINT mPassHeapIndex = -1;
+	UINT mMatCBIndex = -1;
+	UINT mSrvCBIndex = -1;
 	std::unique_ptr<DXBuffer> mGeo = nullptr;
 
 	D3D12_PRIMITIVE_TOPOLOGY PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;

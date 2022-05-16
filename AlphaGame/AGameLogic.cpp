@@ -10,7 +10,7 @@ void AGameLogic::Init()
 bool AGameLogic::LoadMap(const std::string& Path)
 {
 	if (AEngine::GetSingleton().GetScene()->LoadScene(Path)) {
-		//LoadTexture
+		AEngine::GetSingleton().GetAssetManager()->LoadTextures();
 		return true;
 	}
 	return false;

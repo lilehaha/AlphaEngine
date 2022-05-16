@@ -46,7 +46,7 @@ struct StaticMeshInfo
 	std::vector<FVector4> TangentXs;
 	std::vector<FVector4> TangentYs;
 	std::vector<FVector2D> UVs;
-}; 
+};
 
 struct ActorInfo
 {
@@ -60,12 +60,13 @@ struct Vertex
 	glm::vec3 Pos;
 	glm::vec4 Color;
 	glm::vec4 Normal;
+	glm::vec2 UV;
 };
 
 struct MeshData
 {
-	std::vector<Vertex> Vertices;	
-	std::vector<uint32_t> Indices;	
+	std::vector<Vertex> Vertices;
+	std::vector<uint32_t> Indices;
 };
 
 struct ObjectConstants
@@ -73,10 +74,14 @@ struct ObjectConstants
 	glm::mat4x4 world = glm::identity<glm::mat4x4>();
 	glm::mat4x4 viewProj = glm::identity<glm::mat4x4>();
 	glm::mat4x4 Rotation = glm::identity<glm::mat4x4>();
+	glm::mat4x4 TexTransform = glm::identity<glm::mat4x4>();
 	float Time;
 };
 
-struct PassConstants
+struct MatConstants
 {
-	
+	glm::vec4 Diffuse = { 1.0f,1.0f, 1.0f, 1.0f };
+	glm::vec3 FresnelR0 = { 0.1f, 0.1f, 0.1f };
+	float Roughness = 0.01f;
+	glm::mat4x4 Transform = glm::identity<glm::mat4x4>();
 };
