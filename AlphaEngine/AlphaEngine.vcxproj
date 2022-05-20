@@ -151,12 +151,14 @@
     <ClInclude Include="ACameraController.h" />
     <ClInclude Include="Actor.h" />
     <ClInclude Include="ADefine.h" />
+    <ClInclude Include="ADirectionalLight.h" />
     <ClInclude Include="AEngine.h" />
     <ClInclude Include="AGameTimer.h" />
     <ClInclude Include="AInput.h" />
     <ClInclude Include="AInputWin32.h" />
     <ClInclude Include="AMaterial.h" />
     <ClInclude Include="AMaterialManager.h" />
+    <ClInclude Include="APSO.h" />
     <ClInclude Include="ARenderer.h" />
     <ClInclude Include="ARenderItem.h" />
     <ClInclude Include="ARenderResource.h" />
@@ -165,7 +167,6 @@
     <ClInclude Include="ARHIDX12.h" />
     <ClInclude Include="AScene.h" />
     <ClInclude Include="AShader.h" />
-    <ClInclude Include="AShaderManager.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="ATexture.h" />
     <ClInclude Include="AWindowWin32.h" />
@@ -192,11 +193,13 @@
     <ClCompile Include="ABuffer.cpp" />
     <ClCompile Include="ACameraController.cpp" />
     <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="ADirectionalLight.cpp" />
     <ClCompile Include="AEngine.cpp" />
     <ClCompile Include="AGameTimer.cpp" />
     <ClCompile Include="AInputWin32.cpp" />
     <ClCompile Include="AMaterial.cpp" />
     <ClCompile Include="AMaterialManager.cpp" />
+    <ClCompile Include="APSO.cpp" />
     <ClCompile Include="ARenderer.cpp" />
     <ClCompile Include="ARenderItem.cpp" />
     <ClCompile Include="ARenderResource.cpp" />
@@ -205,7 +208,6 @@
     <ClCompile Include="ARHIDX12.cpp" />
     <ClCompile Include="AScene.cpp" />
     <ClCompile Include="AShader.cpp" />
-    <ClCompile Include="AShaderManager.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="ATexture.cpp" />
     <ClCompile Include="AWindow.cpp" />

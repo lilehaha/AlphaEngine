@@ -17,7 +17,7 @@ public:
 	virtual bool Init() override;
 	virtual void OnResize();
 	virtual void Draw(std::shared_ptr<ARenderScene> RenderScene) override;
-	virtual void Update(int CBIndex, ARenderItem* renderItem) override;
+	virtual void Update(int CBIndex, std::shared_ptr<ARenderScene> RenderScene, ARenderItem* renderItem) override;
 
 	void SetWindow(HWND HWnd);
 	float AspectRatio() const;

@@ -145,7 +145,7 @@ void ARHIDX12::Draw(std::shared_ptr<ARenderScene> RenderScene)
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::White, 0, nullptr);
+	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightSteelBlue, 0, nullptr);
 	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
 	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
@@ -185,7 +185,7 @@ void ARHIDX12::Draw(std::shared_ptr<ARenderScene> RenderScene)
 	FlushCommandQueue();
 }
 
-void ARHIDX12::Update(int CBIndex, ARenderItem* renderItem)
+void ARHIDX12::Update(int CBIndex, std::shared_ptr<ARenderScene> RenderScene, ARenderItem* renderItem)
 {
 	mCameraLoc = AEngine::GetSingleton().GetScene()->GetCamera()->GetACameraPosition();
 	AEngine::GetSingleton().GetScene()->GetCamera()->UpdateViewMatrix();
@@ -201,6 +201,11 @@ void ARHIDX12::Update(int CBIndex, ARenderItem* renderItem)
 	objConstants.viewProj = glm::transpose(proj * view);
 	objConstants.Rotation = renderItem->mRotation;
 	objConstants.Time = AEngine::GetSingleton().GetTotalTime();
+	objConstants.directionalLight.Location = AEngine::GetSingleton().GetScene()->DirectionalLight.Location;
+	objConstants.directionalLight.Brightness = AEngine::GetSingleton().GetScene()->DirectionalLight.Brightness;
+	objConstants.LightVP = RenderScene->LightVP;
+	objConstants.TLightVP = RenderScene->TLightVP;
+
 	mObjectCB->CopyData(CBIndex, objConstants);
 }
 

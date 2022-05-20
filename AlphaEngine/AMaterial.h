@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "APSO.h"
 #include "CommonResourceDefine.h"
 
 class AMaterial
@@ -9,6 +10,9 @@ public:
 	int MatCBIndex = -1;
 	int DiffuseSrvHeapIndex = -1;
 	int NormalSrvHeapIndex = -1;
+
+	std::wstring mShaderFilePath;
+	APSO mPSO;
 
 	MatConstants mMatConstants;
 };

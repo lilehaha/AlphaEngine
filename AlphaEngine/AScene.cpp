@@ -84,6 +84,22 @@ bool AScene::LoadScene(const std::string& Path)
 	return true;
 }
 
+bool AScene::LoadLight(const std::string& Path)
+{
+	std::ifstream inFile(Path, std::ios::binary);
+	if (inFile.is_open()) {
+		inFile.read((char*)&DirectionalLight.Location, sizeof(glm::vec4));
+		inFile.read((char*)&DirectionalLight.Direction, sizeof(glm::vec3));
+		inFile.read((char*)&DirectionalLight.Brightness, sizeof(float));
+	}
+	else
+	{
+		return false;
+	}
+	inFile.close();
+	return true;
+}
+
 std::unordered_map<std::string, ActorInfo*>& AScene::GetAllActor()
 {
 	return mActors;

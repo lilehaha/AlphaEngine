@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "ADirectionalLight.h"
 
 struct FVector
 {
@@ -75,7 +76,10 @@ struct ObjectConstants
 	glm::mat4x4 viewProj = glm::identity<glm::mat4x4>();
 	glm::mat4x4 Rotation = glm::identity<glm::mat4x4>();
 	glm::mat4x4 TexTransform = glm::identity<glm::mat4x4>();
+	glm::mat4x4 LightVP = glm::identity<glm::mat4x4>();
+	glm::mat4x4 TLightVP = glm::identity<glm::mat4x4>();
 	float Time;
+	ADirectionalLight directionalLight;
 };
 
 struct MatConstants

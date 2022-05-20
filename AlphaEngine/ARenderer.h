@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 #include "RHIBuilder.h"
 #include "ARenderScene.h"
 
@@ -11,7 +12,8 @@ public:
 	bool Init();
 	void Render();
 	void RenderStart();
-	void BuildRenderItemTrans(std::shared_ptr<ARenderScene> sceneResource);
+	void UpdateShadowTransform(std::shared_ptr<ARenderScene> RenderScene);
+	void UpdateRenderItemTrans(std::shared_ptr<ARenderScene> sceneResource);
 private:
 	std::unique_ptr<RHIBuilder> mRHIBuilder;
 	std::shared_ptr<ARHI> mRHI;

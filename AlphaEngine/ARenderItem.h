@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "ABuffer.h"
+#include "AMaterial.h"
 
 class ARenderItem
 {

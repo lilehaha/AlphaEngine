@@ -88,7 +88,7 @@ bool AWindowWin32::InitWindow(const WindowInfo& mWindowInfo)
 	wc.hInstance = GetModuleHandle(0);
 	wc.hIcon = LoadIcon(0, IDC_ARROW);
 	wc.hCursor = LoadCursor(0, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
 	wc.lpszMenuName = 0;
 	wc.lpszClassName = L"MainWnd";
 

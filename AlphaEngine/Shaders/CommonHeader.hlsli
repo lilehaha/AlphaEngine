@@ -17,3 +17,9 @@
 	"maxAnisotropy = 16,"\
 	"comparisonFunc = COMPARISON_LESS_EQUAL,"\
 	"borderColor = STATIC_BORDER_COLOR_OPAQUE_BLACK)"\
+
+struct Light {
+	float4 Location;
+	float3 Direction;
+	float Strength;
+};

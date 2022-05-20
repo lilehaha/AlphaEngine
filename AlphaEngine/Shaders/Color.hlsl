@@ -13,7 +13,10 @@ cbuffer cbPerObject : register(b1)
 	float4x4 gViewProj;
 	float4x4 gRotation;
 	float4x4 gTexTransform;
+	float4x4 gLightVP;
+	float4x4 gTLightVP;
 	float gTime;
+	Light light;
 };
 
 cbuffer cbMat : register(b2)
@@ -55,10 +58,6 @@ VertexOut VS(VertexIn vin)
 
 	float3 PosW = mul(float4(vin.PosL, 1.0f), gWorld).xyz;
 
-	//PosW.x += sin(gTime) * vout.Normal.x * 10;
-	//PosW.y += sin(gTime) * vout.Normal.y * 10;
-	//PosW.z += sin(gTime) * vout.Normal.z * 10;
-
 	vout.PosH = mul(float4(PosW, 1.0f), gViewProj);
 
 	vout.UV = vin.UV;
@@ -70,7 +69,10 @@ VertexOut VS(VertexIn vin)
 float4 PS(VertexOut pin) : SV_Target
 {
 	float4 diffuseAlbedo = gDiffuseMap.Sample(gSamplerWrap, pin.UV);
-	return pow(diffuseAlbedo * 0.5f + 0.5f, 1 / 2.2f);
+	float4 normalMap = gNormalMap.Sample(gSamplerWrap, pin.UV);
+	//float4 finalCol = diffuseAlbedo + normalMap;
+	float4 finalCol = diffuseAlbedo;
+	return pow(finalCol * 0.5f + 0.5f, 1 / 2.2f);
 	//return pow(pin.Normal * 0.5f + 0.5f, 1 / 2.2f);
 }
 
