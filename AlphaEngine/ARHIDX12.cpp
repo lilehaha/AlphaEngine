@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ARHIDX12.h"
 #include "AEngine.h"
+#include "AShadowResource.h"
 
 ARHIDX12::ARHIDX12()
 {
@@ -23,25 +24,10 @@ bool ARHIDX12::Init()
 
 	OnResize();
 
-	// Reset the command list to prep for initialization commands.
-	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
-
 	mObjectCB = std::make_unique<UploadBuffer<ObjectConstants>>(md3dDevice.Get(), 1000, true);
 	mMatCB = std::make_unique<UploadBuffer<MatConstants>>(md3dDevice.Get(), 1000, true);
 
-	BuildShadersAndInputLayout();
-
 	BuildDescriptorHeaps();
-	
-	BuildRootSignature();
-	BuildPSO();
-	// Execute the initialization commands.
-	ThrowIfFailed(mCommandList->Close());
-	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
-	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-	// Wait until initialization is complete.
-	FlushCommandQueue();
 
 	return true;
 }
@@ -133,56 +119,12 @@ void ARHIDX12::OnResize()
 		glm::vec3(0.0f, 0.0f, 0.0f), AEngine::GetSingleton().GetScene()->GetCamera()->GetUp());
 }
 
-void ARHIDX12::Draw(std::shared_ptr<ARenderScene> RenderScene)
+void ARHIDX12::Draw(std::shared_ptr<ARenderItem> renderItem, const std::string& renderItemName, bool IsDrawDepth, bool isNeedRTV, int RTVNumber, int width, int height)
 {
-	ThrowIfFailed(mDirectCmdListAlloc->Reset());
-	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), mPSO.Get()));
-
-	mCommandList->RSSetViewports(1, &mScreenViewport);
-	mCommandList->RSSetScissorRects(1, &mScissorRect);
-
-	// Indicate a state transition on the resource usage.
-	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-
-	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), DirectX::Colors::LightSteelBlue, 0, nullptr);
-	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
-	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
-
-
-	ID3D12DescriptorHeap* descriptorHeaps[] = { mCbvSrvHeap.Get() };
-	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-
-	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-
-	for each (auto rt in RenderScene->mRenderItem)
-	{
-		mCommandList->IASetVertexBuffers(0, 1, &rt.second->mGeo->VertexBufferView());
-		mCommandList->IASetIndexBuffer(&rt.second->mGeo->IndexBufferView());
-
-		SetGraphicsRootDescriptorTable(rt.second.get());
-
-		mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		std::string Name = rt.first;
-		mCommandList->DrawIndexedInstanced(rt.second->mGeo->DrawArgs[Name].IndexCount, 1,
-			(UINT)rt.second->mGeo->DrawArgs[Name].StartIndexLocation,
-			(UINT)rt.second->mGeo->DrawArgs[Name].BaseVertexLocation, 0);
-	}
-
-	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
-		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
-
-	ThrowIfFailed(mCommandList->Close());
-
-	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
-	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-	ThrowIfFailed(mSwapChain->Present(0, 0));
-	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
-
-	FlushCommandQueue();
+	IASetVertexAndIndexBuffers(CreateBuffer(renderItem, renderItemName));
+	IASetPrimitiveTopology();
+	SetGraphicsRootDescriptorTable(renderItem.get(), IsDrawDepth, isNeedRTV, RTVNumber, width, height);
+	DrawIndexedInstanced(renderItem, renderItemName);
 }
 
 void ARHIDX12::Update(int CBIndex, std::shared_ptr<ARenderScene> RenderScene, ARenderItem* renderItem)
@@ -217,6 +159,11 @@ void ARHIDX12::SetWindow(HWND HWnd)
 float ARHIDX12::AspectRatio() const
 {
 	return static_cast<float>(mClientWidth) / mClientHeight;
+}
+
+ComPtr<ID3D12Device> ARHIDX12::GetDevice()
+{
+	return md3dDevice;
 }
 
 bool ARHIDX12::InitD3D()
@@ -284,7 +231,7 @@ bool ARHIDX12::InitD3D()
 void ARHIDX12::CreateRtvAndDsvDescriptorHeaps()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
-	rtvHeapDesc.NumDescriptors = SwapChainBufferCount;
+	rtvHeapDesc.NumDescriptors = 100;
 	rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	rtvHeapDesc.NodeMask = 0;
@@ -292,7 +239,7 @@ void ARHIDX12::CreateRtvAndDsvDescriptorHeaps()
 		&rtvHeapDesc, IID_PPV_ARGS(mRtvHeap.GetAddressOf())));
 
 	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
-	dsvHeapDesc.NumDescriptors = 1;
+	dsvHeapDesc.NumDescriptors = 10;
 	dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 	dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	dsvHeapDesc.NodeMask = 0;
@@ -513,7 +460,7 @@ void ARHIDX12::BuildConstantBuffers(ARenderItem* renderItem)
 	//mHeapIndex++;
 }
 
-void ARHIDX12::BuildShaderResourceView(const std::string& ActorName, ARenderItem* RenderItem, const std::string& MeshName, std::shared_ptr<ARenderScene> RenderScene)
+void ARHIDX12::BuildShaderResourceView(const std::string& ActorName, ARenderItem* RenderItem, const std::string& MeshName, ARenderResource* RenderResource, std::shared_ptr<ARenderScene> RenderScene)
 {
 	RenderItem->mSrvCBIndex = ++mHeapIndex;
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor(mCbvSrvHeap->GetCPUDescriptorHandleForHeapStart());
@@ -563,15 +510,22 @@ void ARHIDX12::BuildShaderResourceView(const std::string& ActorName, ARenderItem
 	srvDesc2.Texture2D.ResourceMinLODClamp = 0.0f;
 	md3dDevice->CreateShaderResourceView(NormalTex.Get(), &srvDesc2, hDescriptor2);
 
+	auto srvCpuStart = mCbvSrvHeap->GetCPUDescriptorHandleForHeapStart();
+	auto dsvCpuStart = mDsvHeap->GetCPUDescriptorHandleForHeapStart();
+	dynamic_cast<DXShadowResource*>(RenderResource)->BuildDescriptors(
+		CD3DX12_CPU_DESCRIPTOR_HANDLE(srvCpuStart, ++mHeapIndex, mCbvSrvUavDescriptorSize),
+		CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvCpuStart, 1, mDsvDescriptorSize));
+	auto rtvCpuStart = mRtvHeap->GetCPUDescriptorHandleForHeapStart();
+
 	mHeapIndex++;
 }
 
-void ARHIDX12::BuildRootSignature()
+void ARHIDX12::BuildRootSignature(AShader* shader)
 {
 	ThrowIfFailed(md3dDevice->CreateRootSignature(
 			0,
-			mvsByteCode->GetBufferPointer(),
-			mvsByteCode->GetBufferSize(),
+			shader->mvsByteCode->GetBufferPointer(),
+			shader->mvsByteCode->GetBufferSize(),
 			IID_PPV_ARGS(&mRootSignature)));
 }
 
@@ -591,46 +545,116 @@ void ARHIDX12::BuildShadersAndInputLayout()
 	};
 }
 
-void ARHIDX12::BuildPSO()
+void ARHIDX12::ClearRenderTargetView(unsigned __int64 ptr)
 {
-	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
-	ZeroMemory(&psoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-	psoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
-	psoDesc.pRootSignature = mRootSignature.Get();
-	psoDesc.VS =
-	{
-		reinterpret_cast<BYTE*>(mvsByteCode->GetBufferPointer()),
-		mvsByteCode->GetBufferSize()
-	};
-	psoDesc.PS =
-	{
-		reinterpret_cast<BYTE*>(mpsByteCode->GetBufferPointer()),
-		mpsByteCode->GetBufferSize()
-	};
-	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-	psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
-	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	psoDesc.SampleMask = UINT_MAX;
-	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = mBackBufferFormat;
-	psoDesc.SampleDesc.Count = m4xMsaaState ? 4 : 1;
-	psoDesc.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
-	psoDesc.DSVFormat = mDepthStencilFormat;
-	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPSO)));
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle;
+	handle.ptr = ptr;
+	mCommandList->ClearRenderTargetView(handle, Colors::LightSteelBlue, 0, nullptr);
 }
 
-void ARHIDX12::SetGraphicsRootDescriptorTable(ARenderItem* RenderItem)
+void ARHIDX12::ClearDepthStencilView(unsigned __int64 ptr)
 {
-	SetGraphicsRoot32BitConstants(1080,1920);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE handle;
+	handle.ptr = ptr;
+	mCommandList->ClearDepthStencilView(handle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+}
+
+void ARHIDX12::OMSetStencilRef(int StencilRef)
+{
+	mCommandList->OMSetStencilRef(StencilRef);
+}
+
+void ARHIDX12::OMSetRenderTargets(int numTatgetDescriptors, unsigned __int64 RTptr, bool RTsSingleHandleToDescriptorRange, unsigned __int64 DSptr)
+{
+	std::unique_ptr<CD3DX12_CPU_DESCRIPTOR_HANDLE> RThandle = std::make_unique<CD3DX12_CPU_DESCRIPTOR_HANDLE>();
+	std::unique_ptr<CD3DX12_CPU_DESCRIPTOR_HANDLE> DShandle = std::make_unique<CD3DX12_CPU_DESCRIPTOR_HANDLE>();
+
+	if (RTptr != 0) {
+		RThandle->ptr = RTptr;
+	}
+	else
+	{
+		RThandle = nullptr;
+	}
+
+	if (DSptr != 0) {
+		DShandle->ptr = DSptr;
+	}
+	else
+	{
+		DShandle = nullptr;
+	}
+	mCommandList->OMSetRenderTargets(numTatgetDescriptors, RThandle.get(), RTsSingleHandleToDescriptorRange, DShandle.get());
+}
+
+void ARHIDX12::SetDescriptorHeaps()
+{
+	ID3D12DescriptorHeap* descriptorHeaps[] = { mCbvSrvHeap.Get() };
+	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+}
+
+void ARHIDX12::SetGraphicsRootSignature()
+{
+	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+}
+
+void ARHIDX12::IASetVertexAndIndexBuffers(ABuffer* buffer)
+{
+	auto dxBuffer = dynamic_cast<DXBuffer*>(buffer);
+
+	mCommandList->IASetVertexBuffers(0, 1, &dxBuffer->VertexBufferView());
+	mCommandList->IASetIndexBuffer(&dxBuffer->IndexBufferView());
+}
+
+void ARHIDX12::IASetPrimitiveTopology()
+{
+	mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void ARHIDX12::BuildPSO(std::shared_ptr<ARenderItem> renderItem, AMaterial Mat)
+{
+	if (PSONames.find(Mat.mPSO.Name) != PSONames.end()) {
+		return;
+	}
+	BuildRootSignature(AShaderManager::GetSingleton().CompileShader(Mat.mShaderFilePath));
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC PSOState;
+	Mat.mPSO.PipelineState.pRootSignature = mRootSignature.Get();
+	Mat.mPSO.PipelineState.SampleDesc.Count = m4xMsaaState ? 4 : 1;
+	Mat.mPSO.PipelineState.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
+	PSOState = Mat.mPSO.PipelineState;
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&PSOState, IID_PPV_ARGS(&mPSO[Mat.mPSO.Name])));
+	PSONames.insert(Mat.mPSO.Name);
+}
+
+void ARHIDX12::ChangePSOState(AMaterial Mat, const APSO& PSO, const std::wstring& Shader)
+{
+	Mat.mShaderFilePath = Shader;
+	Mat.mPSO = PSO;
+}
+
+void ARHIDX12::ClearAndSetRenderTatget(unsigned __int64 ClearRenderTargetHand, unsigned __int64 ClearDepthStencilHand, int numTatgetDescriptors, unsigned __int64 SetRenderTargetHand, bool RTsSingleHandleToDescriptorRange, unsigned __int64 SetDepthStencilHand)
+{
+	if (ClearRenderTargetHand != 0) {
+		ClearRenderTargetView(ClearRenderTargetHand);
+	}
+	if (ClearDepthStencilHand != 0) {
+		ClearDepthStencilView(ClearDepthStencilHand);
+	}
+	OMSetRenderTargets(numTatgetDescriptors, SetRenderTargetHand, RTsSingleHandleToDescriptorRange, SetDepthStencilHand);
+	SetDescriptorHeaps();
+	SetGraphicsRootSignature();
+}
+
+void ARHIDX12::SetGraphicsRootDescriptorTable(ARenderItem* renderItem, bool isDepth, bool isNeedRTV, int RTVNumber, int width, int height)
+{
+	SetGraphicsRoot32BitConstants(width,height);
 
 	auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
-	handle.Offset(RenderItem->mCBHeapIndex, mCbvSrvUavDescriptorSize);
+	handle.Offset(renderItem->mCBHeapIndex, mCbvSrvUavDescriptorSize);
 	mCommandList->SetGraphicsRootDescriptorTable(1,
 		handle);
 	auto handle2 = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
-	handle2.Offset(RenderItem->mSrvCBIndex, mCbvSrvUavDescriptorSize);
+	handle2.Offset(renderItem->mSrvCBIndex, mCbvSrvUavDescriptorSize);
 	mCommandList->SetGraphicsRootDescriptorTable(2,
 		handle2);
 }
@@ -642,7 +666,14 @@ void ARHIDX12::SetGraphicsRoot32BitConstants(int Width, int Height)
 	mCommandList->SetGraphicsRoot32BitConstants(0, 3, &mCameraLoc, 0);
 }
 
-void ARHIDX12::BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource)
+void ARHIDX12::DrawIndexedInstanced(std::shared_ptr<ARenderItem> renderItem, const std::string& Name)
+{
+	mCommandList->DrawIndexedInstanced(renderItem->mGeo->DrawArgs[Name].IndexCount, 1,
+		(UINT)renderItem->mGeo->DrawArgs[Name].StartIndexLocation,
+		(UINT)renderItem->mGeo->DrawArgs[Name].BaseVertexLocation, 0);
+}
+
+void ARHIDX12::BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource, const std::string& MatName)
 {
 	std::unordered_map<std::string, MeshData> meshDataMap = sceneResource->BuildMeshData();
 
@@ -654,6 +685,7 @@ void ARHIDX12::BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource)
 		if (sceneResource->mRenderItem[meshDataPair.first]->mGeo == nullptr) {
 			sceneResource->mRenderItem[meshDataPair.first]->mGeo = std::make_unique<DXBuffer>();
 		}
+		sceneResource->mRenderItem[meshDataPair.first]->MatName = MatName;
 		const UINT vbByteSize = (UINT)meshDataPair.second.Vertices.size() * sizeof(Vertex);
 		const UINT ibByteSize = (UINT)meshDataPair.second.Indices.size() * sizeof(uint32_t);
 		sceneResource->mRenderItem[meshDataPair.first]->mGeo->Name = meshDataPair.first;
@@ -680,15 +712,15 @@ void ARHIDX12::BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource)
 	}
 }
 
-void ARHIDX12::RenderFrameBegin(std::shared_ptr<ARenderScene> RenderResource)
+void ARHIDX12::RenderFrameBegin(std::shared_ptr<ARenderScene> renderResource, const std::string& MatName)
 {
-	BuildRenderItem(RenderResource);
+	BuildRenderItem(renderResource, MatName);
 }
 
-void ARHIDX12::CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, std::shared_ptr<ARenderScene> RenderScene)
+void ARHIDX12::CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, ARenderResource* shadowResource, std::shared_ptr<ARenderScene> RenderScene)
 {
 	BuildConstantBuffers(RenderItem);
-	BuildShaderResourceView(ActorName, RenderItem, MeshName, RenderScene);
+	BuildShaderResourceView(ActorName, RenderItem, MeshName, shadowResource, RenderScene);
 }
 
 void ARHIDX12::ResetCommand(const std::string& PSOName)
@@ -699,8 +731,46 @@ void ARHIDX12::ResetCommand(const std::string& PSOName)
 	else
 	{
 		ThrowIfFailed(mDirectCmdListAlloc->Reset());
-		//ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), mPSO[PSOName].Get()));
+		ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), mPSO[PSOName].Get()));
 	}
+}
+
+void ARHIDX12::RSSetViewports(float TopLeftX, float TopLeftY, float Width, float Height, float MinDepth, float MaxDepth)
+{
+	mScreenViewport.Height = Height;
+	mScreenViewport.MaxDepth = MaxDepth;
+	mScreenViewport.MinDepth = MinDepth;
+	mScreenViewport.TopLeftX = TopLeftX;
+	mScreenViewport.TopLeftY = TopLeftY;
+	mScreenViewport.Width = Width;
+	mCommandList->RSSetViewports(1, &mScreenViewport);
+}
+
+void ARHIDX12::RSSetScissorRects(long left, long top, long right, long bottom)
+{
+	mScissorRect.bottom = bottom;
+	mScissorRect.right = right;
+	mScissorRect.left = left;
+	mScissorRect.top = top;
+	mCommandList->RSSetScissorRects(1, &mScissorRect);
+}
+
+void ARHIDX12::ResourceBarrier(unsigned int NumberBarrier, std::shared_ptr<AResource> Resource, int stateBefore, int stateAfter)
+{
+	auto afterState = D3D12_RESOURCE_STATES(stateAfter);
+	mCommandList->ResourceBarrier(NumberBarrier, &CD3DX12_RESOURCE_BARRIER::Transition(Resource->Resource, D3D12_RESOURCE_STATES(stateBefore), afterState));
+}
+
+void ARHIDX12::SetPipelineState(std::shared_ptr<ARenderItem> renderItem, AMaterial Mat)
+{
+	BuildPSO(renderItem, Mat);
+	if (Mat.mPSO.Name != currentPSOName) {
+		mCommandList->SetPipelineState(mPSO[Mat.mPSO.Name].Get());
+	}
+	else {
+		return;
+	}
+	currentPSOName = Mat.mPSO.Name;
 }
 
 void ARHIDX12::ExecuteCommandLists()
@@ -711,7 +781,7 @@ void ARHIDX12::ExecuteCommandLists()
 	ThrowIfFailed(mSwapChain->Present(0, 0));
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
 	FlushCommandQueue();
-	//currentPSOName = "";
+	currentPSOName = "";
 }
 
 void ARHIDX12::CreateTextureResource(std::shared_ptr<ARenderScene> RenderScene, std::shared_ptr<ATexture> Texture)
@@ -734,4 +804,19 @@ void ARHIDX12::CreateTextureResource(std::shared_ptr<ARenderScene> RenderScene, 
 	ThrowIfFailed(mCommandList->Close());
 	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+}
+
+void ARHIDX12::BeginEvent(const std::string EventName)
+{
+	PIXBeginEvent(mCommandList.Get(), 0, EventName.c_str());
+}
+
+void ARHIDX12::EndEvent()
+{
+	PIXEndEvent(mCommandList.Get());
+}
+
+ABuffer* ARHIDX12::CreateBuffer(std::shared_ptr<ARenderItem> renderItem, const std::string& Name)
+{
+	return renderItem->mGeo.get();
 }

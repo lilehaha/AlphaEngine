@@ -167,6 +167,7 @@
     <ClInclude Include="ARHIDX12.h" />
     <ClInclude Include="AScene.h" />
     <ClInclude Include="AShader.h" />
+    <ClInclude Include="AShadowResource.h" />
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="ATexture.h" />
     <ClInclude Include="AWindowWin32.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="AWindow.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="DXRHIResource.h" />
     <ClInclude Include="InputBuilder.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="ARenderScene.h" />
@@ -208,6 +210,7 @@
     <ClCompile Include="ARHIDX12.cpp" />
     <ClCompile Include="AScene.cpp" />
     <ClCompile Include="AShader.cpp" />
+    <ClCompile Include="AShadowResource.cpp" />
     <ClCompile Include="AssetManager.cpp" />
     <ClCompile Include="ATexture.cpp" />
     <ClCompile Include="AWindow.cpp" />
@@ -215,6 +218,7 @@
     <ClCompile Include="ACamera.cpp" />
     <ClCompile Include="d3dUtil.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
+    <ClCompile Include="DXRHIResource.cpp" />
     <ClCompile Include="InputBuilder.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="ARenderScene.cpp" />

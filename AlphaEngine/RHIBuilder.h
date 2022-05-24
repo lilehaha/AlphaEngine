@@ -5,5 +5,7 @@ class RHIBuilder
 {
 public:
 	std::shared_ptr<ARHI>  CreateRHI();
+	std::shared_ptr<ARHIResource> CreateRHIResource();
+	std::shared_ptr<ARenderResource> CreateShadowResource();
 };
 

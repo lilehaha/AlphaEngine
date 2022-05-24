@@ -1,5 +1,5 @@
 #pragma once
-
+#include "stdafx.h"
 #include "ARHI.h"
 #include "UploadBuffer.h"
 #include "ARenderScene.h"
@@ -9,25 +9,26 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 
 
-class ARHIDX12 : public ARHI
+class ARHIDX12 : public ARHI , public Singleton<ARHIDX12>
 {
 public:
 	ARHIDX12();
 	virtual ~ARHIDX12();
 	virtual bool Init() override;
 	virtual void OnResize();
-	virtual void Draw(std::shared_ptr<ARenderScene> RenderScene) override;
+	virtual void Draw(std::shared_ptr<ARenderItem> renderItem, const std::string& renderItemName, bool IsDrawDepth, bool isNeedRTV, int RTVNumber, int width, int height) override;
 	virtual void Update(int CBIndex, std::shared_ptr<ARenderScene> RenderScene, ARenderItem* renderItem) override;
 
 	void SetWindow(HWND HWnd);
 	float AspectRatio() const;
-private:
-	bool InitD3D();
-	virtual void CreateRtvAndDsvDescriptorHeaps();
-
+	ComPtr<ID3D12Device> GetDevice();
 	ID3D12Resource* CurrentBackBuffer()const;
 	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView()const;
+
+private:
+	bool InitD3D();
+	virtual void CreateRtvAndDsvDescriptorHeaps();
 
 	void CreateCommandObjects();
 	void CreateSwapChain();
@@ -38,24 +39,41 @@ private:
 	void LogAdapterOutputs(IDXGIAdapter* adapter);
 	void LogOutputDisplayModes(IDXGIOutput* output, DXGI_FORMAT format);
 
-
 	void BuildDescriptorHeaps();
 	void BuildConstantBuffers(ARenderItem* renderItem);
-	void BuildShaderResourceView(const std::string& ActorName, ARenderItem* RenderItem, const std::string& MeshName, std::shared_ptr<ARenderScene> RenderScene);
-	void BuildRootSignature();
+	void BuildShaderResourceView(const std::string& ActorName, ARenderItem* RenderItem, const std::string& MeshName, ARenderResource* RenderResource, std::shared_ptr<ARenderScene> RenderScene);
+	void BuildRootSignature(AShader* shader);
 	void BuildShadersAndInputLayout();
-	void BuildPSO();
-
-	void SetGraphicsRootDescriptorTable(ARenderItem* RenderItem);
+	void ClearRenderTargetView(unsigned __int64 ptr);
+	void ClearDepthStencilView(unsigned __int64 ptr);
+	void OMSetStencilRef(int StencilRef);
+	void OMSetRenderTargets(int numTatgetDescriptors, unsigned __int64 RTptr, bool RTsSingleHandleToDescriptorRange, unsigned __int64 DSptr);
+	void SetDescriptorHeaps();
+	void SetGraphicsRootSignature();
+	void IASetVertexAndIndexBuffers(ABuffer* buffer);
+	void IASetPrimitiveTopology();
+	void SetGraphicsRootDescriptorTable(ARenderItem* renderItem, bool isDepth, bool isNeedRTV, int RTVNumber, int width, int height);
 	void SetGraphicsRoot32BitConstants(int Width, int Height);
-
-	void BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource);
+	void DrawIndexedInstanced(std::shared_ptr<ARenderItem> renderItem, const std::string& Name);
+	void BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource, const std::string& MatName);
 public:
-	virtual void RenderFrameBegin(std::shared_ptr<ARenderScene> RenderScene) override;
-	virtual void CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, std::shared_ptr<ARenderScene> RenderScene) override;
+	virtual void RenderFrameBegin(std::shared_ptr<ARenderScene> renderResource, const std::string& MatName) override;
+	virtual void CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, ARenderResource* shadowResource, std::shared_ptr<ARenderScene> RenderScene) override;
 	virtual void ResetCommand(const std::string& PSOName) override;
+	virtual void RSSetViewports(float TopLeftX, float TopLeftY, float Width, float Height, float MinDepth, float MaxDepth) override;
+	virtual void RSSetScissorRects(long left, long top, long right, long bottom) override;
+	virtual void ResourceBarrier(unsigned int NumberBarrier, std::shared_ptr<AResource> Resource, int stateBefore, int stateAfter) override;
+	virtual void SetPipelineState(std::shared_ptr<ARenderItem> renderItem, AMaterial Mat) override;
+	void BuildPSO(std::shared_ptr<ARenderItem> renderItem, AMaterial Mat) override;
+	virtual void ChangePSOState(AMaterial Mat, const APSO& PSO, const std::wstring& Shader)override;
+	virtual void ClearAndSetRenderTatget(unsigned __int64 ClearRenderTargetHand, unsigned __int64 ClearDepthStencilHand, int numTatgetDescriptors, unsigned __int64 SetRenderTargetHand,
+		bool RTsSingleHandleToDescriptorRange, unsigned __int64 SetDepthStencilHand) override;
 	virtual void ExecuteCommandLists() override;
 	virtual void CreateTextureResource(std::shared_ptr<ARenderScene> RenderScene, std::shared_ptr<ATexture> Texture) override;
+
+	virtual void BeginEvent(const std::string EventName) override;
+	virtual void EndEvent() override;
+	virtual ABuffer* CreateBuffer(std::shared_ptr<ARenderItem> renderItem, const std::string& Name) override;
 private:
 	HWND mhMainWnd = nullptr;
 
@@ -102,8 +120,6 @@ private:
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
 
-	ComPtr<ID3D12PipelineState> mPSO = nullptr;
-
 	glm::mat4x4 mWorld = glm::identity<glm::mat4x4>();
 	glm::mat4x4 mView = glm::identity<glm::mat4x4>();
 	glm::mat4x4 mProj = glm::identity<glm::mat4x4>();
@@ -112,5 +128,9 @@ private:
 	int mEleIndex = 0;
 
 	glm::vec3 mCameraLoc;
+
+	std::set<std::string> PSONames;
+	std::string currentPSOName;
+	std::unordered_map<std::string, ComPtr<ID3D12PipelineState>> mPSO;
 };
 

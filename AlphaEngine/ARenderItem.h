@@ -14,6 +14,7 @@ public:
 	UINT mMatCBIndex = -1;
 	UINT mSrvCBIndex = -1;
 	std::unique_ptr<DXBuffer> mGeo = nullptr;
+	std::string MatName;
 
 	D3D12_PRIMITIVE_TOPOLOGY PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	UINT IndexCount = 0;

@@ -27,7 +27,7 @@ const AMaterial& AMaterialManager::GetMaterial(const std::string& MaterialName)
 		mMaterialMap["Shadow"] = mMaterial;
 		return mMaterialMap["Shadow"];
 	}
-	else
+	else if (MaterialName == "Base")
 	{
 		std::vector<INPUT_ELEMENT_DESC> mInputLayout;
 		mInputLayout =
@@ -38,12 +38,12 @@ const AMaterial& AMaterialManager::GetMaterial(const std::string& MaterialName)
 			{ "UV", 0, FORMAT_R32G32B32A32_FLOAT, 0, 44, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 		};
 		mMaterial.mShaderFilePath = L"..\\AlphaEngine\\Shaders\\Color.hlsl";
-		mMaterial.Name = "Default";
+		mMaterial.Name = "Base";
 		mMaterial.mMatConstants.Diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
 		mMaterial.mMatConstants.FresnelR0 = { 0.5f, 0.5f, 0.5f };
 		mMaterial.mMatConstants.Roughness = 0.01f;
 		mMaterial.mPSO = mPSOManager->CreatePSO(E_PSOType::Base, std::move(mInputLayout), AShaderManager::GetSingleton().CompileShader(mMaterial.mShaderFilePath));
-		mMaterialMap["Default"] = mMaterial;
-		return mMaterialMap["Default"];
+		mMaterialMap["Base"] = mMaterial;
+		return mMaterialMap["Base"];
 	}
 }

@@ -39,6 +39,8 @@ bool AEngine::Init()
 	mAssetManager = std::make_shared<AssetManager>();
 	mScene = std::make_shared<AScene>();
 	mRender = std::make_unique<ARenderer>();
+	mShaderManager = std::make_unique<AShaderManager>();
+	mMaterialManager = std::make_unique<AMaterialManager>();
 
 	if (!mRender->Init())
 	{

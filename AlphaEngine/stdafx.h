@@ -11,11 +11,13 @@
 #include <array>
 #include <map>
 #include <unordered_map>
+#include <set>
 #include <cstdint>
 #include <fstream>
 #include <sstream>
 #include <windowsx.h>
 #include <comdef.h>
+#include <pix.h>
 
 #define _XM_NO_INTRINSICS_
 #include <DirectXCollision.h>

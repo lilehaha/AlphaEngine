@@ -4,6 +4,7 @@
 #include "ARenderer.h"
 #include "AScene.h"
 #include "AssetManager.h"
+#include "AMaterialManager.h"
 
 
 enum class EPlatform
@@ -36,6 +37,8 @@ private:
 	std::unique_ptr<ARenderer> mRender;
 	std::shared_ptr<AScene> mScene;
 	std::shared_ptr<AssetManager> mAssetManager;
+	std::unique_ptr<AShaderManager> mShaderManager;
+	std::unique_ptr<AMaterialManager> mMaterialManager;
 	AGameTimer mTimer;
 	std::wstring mEngineName;
 

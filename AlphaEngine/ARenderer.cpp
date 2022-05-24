@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ARenderer.h"
 #include "AEngine.h"
+#include "AShadowResource.h"
+#include "DXRHIResource.h"
 
 ARenderer::ARenderer() : mRHIBuilder(nullptr),mRHI(nullptr)
 {
@@ -14,18 +16,21 @@ ARenderer::~ARenderer()
 
 bool ARenderer::Init()
 {
+	mRenderScene = std::make_shared<ARenderScene>();
 	mRHIBuilder = std::make_unique<RHIBuilder>();
 	mRHI = mRHIBuilder->CreateRHI();
-	mRenderScene = std::make_shared<ARenderScene>();
 	if (!mRHI->Init())
 	{
 		return false;
 	}
+	mShadowResource = mRHIBuilder->CreateShadowResource();
+	mRHIResource = mRHIBuilder->CreateRHIResource();
 	return true;
 }
 
 void ARenderer::Render()
 {
+	mRHI->ResetCommand("RenderScene");
 	UpdateShadowTransform(mRenderScene);
 	UpdateRenderItemTrans(mRenderScene);
 	int actorIndex = 0;
@@ -34,7 +39,9 @@ void ARenderer::Render()
 		mRHI->Update(actorIndex,mRenderScene, mRenderScene->mRenderItem[actorPair.first].get());
 		actorIndex++;
 	}
-	mRHI->Draw(mRenderScene);
+	ShadowPass();
+	BasePass(1, "Base");
+	mRHI->ExecuteCommandLists();
 }
 
 void ARenderer::RenderStart()
@@ -47,11 +54,16 @@ void ARenderer::RenderStart()
 	}
 
 	mRHI->ResetCommand("Null");
-	mRHI->RenderFrameBegin(mRenderScene);
+	mRHI->RenderFrameBegin(mRenderScene, "Shadow");
+	for (auto&& RenderItem : mRenderScene->mRenderItem)
+	{
+		mRHI->ChangePSOState(AMaterialManager::GetSingleton().GetMaterial("Shadow"), AMaterialManager::GetSingleton().GetMaterial("Shadow").mPSO, AMaterialManager::GetSingleton().GetMaterial("Shadow").mShaderFilePath);
+		mRHI->SetPipelineState(RenderItem.second, AMaterialManager::GetSingleton().GetMaterial("Shadow"));
+	}
 
 	for (auto&& actorPair : AEngine::GetSingleton().GetScene()->GetAllActor())
 	{
-		mRHI->CreateCbHeapsAndSrv(actorPair.first, actorPair.second->StaticMeshNames[0], mRenderScene->mRenderItem[actorPair.first].get(), mRenderScene);
+		mRHI->CreateCbHeapsAndSrv(actorPair.first, actorPair.second->StaticMeshNames[0], mRenderScene->mRenderItem[actorPair.first].get(), mShadowResource.get(), mRenderScene);
 	}
 	mRHI->ExecuteCommandLists();
 }
@@ -117,4 +129,44 @@ void ARenderer::UpdateRenderItemTrans(std::shared_ptr<ARenderScene> sceneResourc
 		sceneResource->mRenderItem[Actor.first]->mScale = glm::transpose(Scale);
 		sceneResource->mRenderItem[Actor.first]->mWorld = glm::transpose(W * mWorld);
 	}
+}
+
+void ARenderer::BasePass(int RTVNumber, const std::string& PSOName)
+{
+	mRHI->BeginEvent(PSOName);
+	mRHI->RSSetViewports(0.0f, 0.0f, (float)AEngine::GetSingleton().GetWindow()->GetWidth(), AEngine::GetSingleton().GetWindow()->GetHeight(), 0.0f, 1.0f);
+	mRHI->RSSetScissorRects(0, 0, (float)AEngine::GetSingleton().GetWindow()->GetWidth(), AEngine::GetSingleton().GetWindow()->GetHeight());
+
+	mRHI->ResourceBarrier(1, mRHIResource->BackBuffer(), RESOURCE_STATES::PRESENT, RESOURCE_STATES::RENDER_TARGET);
+
+	mRHI->ClearAndSetRenderTatget(mRHIResource->CurrentBackBufferViewHand(), mRHIResource->CurrentDepthStencilViewHand(),
+		1, mRHIResource->CurrentBackBufferViewHand(), true, mRHIResource->CurrentDepthStencilViewHand());
+
+	mRHI->ChangePSOState(AMaterialManager::GetSingleton().GetMaterial(PSOName), AMaterialManager::GetSingleton().GetMaterial(PSOName).mPSO, AMaterialManager::GetSingleton().GetMaterial(PSOName).mShaderFilePath);
+	for (auto&& renderItem : mRenderScene->mRenderItem)
+	{
+		mRHI->SetPipelineState(renderItem.second, AMaterialManager::GetSingleton().GetMaterial(PSOName));
+		mRHI->Draw(renderItem.second, renderItem.first, false, true, RTVNumber, 1920, 1080);
+	}
+	mRHI->ResourceBarrier(1, mRHIResource->BackBuffer(), RESOURCE_STATES::RENDER_TARGET, RESOURCE_STATES::PRESENT);
+	mRHI->EndEvent();
+}
+
+void ARenderer::ShadowPass()
+{
+	mRHI->BeginEvent("ShadowPass");
+	mRHI->RSSetViewports(0.0f, 0.0f, 2048, 2048, 0.0f, 1.0f);
+	mRHI->RSSetScissorRects(0, 0, 2048, 2048);
+	mRHI->ResourceBarrier(1, std::dynamic_pointer_cast<AShadowResource>(mShadowResource)->GetResource(), RESOURCE_STATES::RESOURCE_STATE_GENERIC_READ, RESOURCE_STATES::DEPTH_WRITE);
+	//SetRenderTatget
+	mRHI->ClearAndSetRenderTatget(0, std::dynamic_pointer_cast<AShadowResource>(mShadowResource)->DSV(),
+		0, 0, false, std::dynamic_pointer_cast<AShadowResource>(mShadowResource)->DSV());
+	for (auto&& RenderItem : mRenderScene->mRenderItem)
+	{
+		mRHI->ChangePSOState(AMaterialManager::GetSingleton().GetMaterial(RenderItem.second->MatName), AMaterialManager::GetSingleton().GetMaterial("Shadow").mPSO, AMaterialManager::GetSingleton().GetMaterial("Shadow").mShaderFilePath);
+		mRHI->SetPipelineState(RenderItem.second, AMaterialManager::GetSingleton().GetMaterial("Shadow"));
+		mRHI->Draw(RenderItem.second, RenderItem.first, true, false, 0, 1920, 1080);
+	}
+	mRHI->ResourceBarrier(1, std::dynamic_pointer_cast<AShadowResource>(mShadowResource)->GetResource(), RESOURCE_STATES::DEPTH_WRITE, RESOURCE_STATES::RESOURCE_STATE_GENERIC_READ);
+	mRHI->EndEvent();
 }

@@ -180,6 +180,12 @@
     <ClInclude Include="APSO.h">
       <Filter>Header Files\Render</Filter>
     </ClInclude>
+    <ClInclude Include="DXRHIResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="AShadowResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AlphaEngine.rc">
@@ -282,6 +288,12 @@
     </ClCompile>
     <ClCompile Include="APSO.cpp">
       <Filter>Source Files\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="AShadowResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="DXRHIResource.cpp">
+      <Filter>Source Files\Resource</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
