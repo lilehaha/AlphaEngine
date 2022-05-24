@@ -3,7 +3,6 @@
 "RootConstants(b0, num32BitConstants = 4),"\
 "DescriptorTable(CBV(b1,numDescriptors = 2), visibility = SHADER_VISIBILITY_ALL),"\
 "DescriptorTable(SRV(t0,numDescriptors = 2), visibility = SHADER_VISIBILITY_PIXEL),"\
-
 "StaticSampler(s0," \
 	"addressU = TEXTURE_ADDRESS_WRAP," \
 	"addressV = TEXTURE_ADDRESS_WRAP," \
