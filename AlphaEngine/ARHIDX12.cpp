@@ -642,7 +642,7 @@ void ARHIDX12::ClearAndSetRenderTatget(unsigned __int64 ClearRenderTargetHand, u
 	}
 	OMSetRenderTargets(numTatgetDescriptors, SetRenderTargetHand, RTsSingleHandleToDescriptorRange, SetDepthStencilHand);
 	SetDescriptorHeaps();
-	SetGraphicsRootSignature();
+    SetGraphicsRootSignature();
 }
 
 void ARHIDX12::SetGraphicsRootDescriptorTable(ARenderItem* renderItem, bool isDepth, bool isNeedRTV, int RTVNumber, int width, int height)
@@ -653,10 +653,13 @@ void ARHIDX12::SetGraphicsRootDescriptorTable(ARenderItem* renderItem, bool isDe
 	handle.Offset(renderItem->mCBHeapIndex, mCbvSrvUavDescriptorSize);
 	mCommandList->SetGraphicsRootDescriptorTable(1,
 		handle);
-	auto handle2 = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
-	handle2.Offset(renderItem->mSrvCBIndex, mCbvSrvUavDescriptorSize);
-	mCommandList->SetGraphicsRootDescriptorTable(2,
-		handle2);
+	if (!isDepth)
+	{
+		auto handle2 = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
+		handle2.Offset(renderItem->mSrvCBIndex, mCbvSrvUavDescriptorSize);
+		mCommandList->SetGraphicsRootDescriptorTable(2,
+			handle2);
+	}
 }
 
 void ARHIDX12::SetGraphicsRoot32BitConstants(int Width, int Height)
@@ -758,7 +761,7 @@ void ARHIDX12::RSSetScissorRects(long left, long top, long right, long bottom)
 void ARHIDX12::ResourceBarrier(unsigned int NumberBarrier, std::shared_ptr<AResource> Resource, int stateBefore, int stateAfter)
 {
 	auto afterState = D3D12_RESOURCE_STATES(stateAfter);
-	mCommandList->ResourceBarrier(NumberBarrier, &CD3DX12_RESOURCE_BARRIER::Transition(Resource->Resource, D3D12_RESOURCE_STATES(stateBefore), afterState));
+	mCommandList->ResourceBarrier(NumberBarrier, &CD3DX12_RESOURCE_BARRIER::Transition(Resource->Resource, D3D12_RESOURCE_STATES(stateBefore), D3D12_RESOURCE_STATES(afterState)));
 }
 
 void ARHIDX12::SetPipelineState(std::shared_ptr<ARenderItem> renderItem, AMaterial Mat)

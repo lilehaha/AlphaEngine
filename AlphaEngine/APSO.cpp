@@ -94,7 +94,7 @@ APSO APSOManager::BuildShadowPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AS
 	};
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
-	psoDesc.RasterizerState.DepthBias = 100000;
+	psoDesc.RasterizerState.DepthBias = 10000;
 	psoDesc.RasterizerState.DepthBiasClamp = 0.0f;
 	psoDesc.RasterizerState.SlopeScaledDepthBias = 1.0f;
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
@@ -102,7 +102,7 @@ APSO APSOManager::BuildShadowPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AS
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 0;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.RTVFormats[0] = DXGI_FORMAT_UNKNOWN;
 	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
 	mPso.Name = "Shadow";

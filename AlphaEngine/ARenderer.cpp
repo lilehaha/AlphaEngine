@@ -70,7 +70,7 @@ void ARenderer::RenderStart()
 
 void ARenderer::UpdateShadowTransform(std::shared_ptr<ARenderScene> RenderScene)
 {
-	float Radius = 2500;
+	float Radius = 2000;
 	glm::vec3 direction =  AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
 	glm::vec3 lightPos = -2.0f * Radius * AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
 	float Time = AEngine::GetSingleton().GetTotalTime() / 3;
@@ -158,7 +158,6 @@ void ARenderer::ShadowPass()
 	mRHI->RSSetViewports(0.0f, 0.0f, 2048, 2048, 0.0f, 1.0f);
 	mRHI->RSSetScissorRects(0, 0, 2048, 2048);
 	mRHI->ResourceBarrier(1, std::dynamic_pointer_cast<AShadowResource>(mShadowResource)->GetResource(), RESOURCE_STATES::RESOURCE_STATE_GENERIC_READ, RESOURCE_STATES::DEPTH_WRITE);
-	//SetRenderTatget
 	mRHI->ClearAndSetRenderTatget(0, std::dynamic_pointer_cast<AShadowResource>(mShadowResource)->DSV(),
 		0, 0, false, std::dynamic_pointer_cast<AShadowResource>(mShadowResource)->DSV());
 	for (auto&& RenderItem : mRenderScene->mRenderItem)

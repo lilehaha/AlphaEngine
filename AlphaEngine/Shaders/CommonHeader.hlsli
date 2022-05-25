@@ -2,7 +2,7 @@
 "RootFlags( ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT )," \
 "RootConstants(b0, num32BitConstants = 4),"\
 "DescriptorTable(CBV(b1,numDescriptors = 2), visibility = SHADER_VISIBILITY_ALL),"\
-"DescriptorTable(SRV(t0,numDescriptors = 2), visibility = SHADER_VISIBILITY_PIXEL),"\
+"DescriptorTable(SRV(t0,numDescriptors = 3), visibility = SHADER_VISIBILITY_PIXEL),"\
 "StaticSampler(s0," \
 	"addressU = TEXTURE_ADDRESS_WRAP," \
 	"addressV = TEXTURE_ADDRESS_WRAP," \
@@ -23,3 +23,30 @@ struct Light {
 	float3 Direction;
 	float Strength;
 };
+float3 CameraLoc : register(b0);
+
+cbuffer cbPerObject : register(b1)
+{
+	float4x4 gWorld;
+	float4x4 gViewProj;
+	float4x4 gRotation;
+	float4x4 gTexTransform;
+	float4x4 gLightVP;
+	float4x4 gTLightVP;
+	float gTime;
+	Light light;
+};
+
+cbuffer cbMat : register(b2)
+{
+	float4 gDiffuseAlbedo;
+	float3 gFresnelR0;
+	float gRoughness;
+	float4x4 gMatTransform;
+};
+
+Texture2D gDiffuseMap : register(t0);
+Texture2D gNormalMap : register(t1);
+Texture2D gShadowMap : register(t2);
+
+SamplerState gSamplerWrap : register(s0);

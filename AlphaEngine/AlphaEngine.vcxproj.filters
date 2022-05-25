@@ -303,5 +303,8 @@
     <None Include="Shaders\CommonHeader.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\ShadowMap.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

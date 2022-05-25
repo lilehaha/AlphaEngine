@@ -5,34 +5,6 @@
 //***************************************************************************************
 #include "CommonHeader.hlsli"
 
-float3 CameraLoc : register(b0);
-
-cbuffer cbPerObject : register(b1)
-{
-	float4x4 gWorld;
-	float4x4 gViewProj;
-	float4x4 gRotation;
-	float4x4 gTexTransform;
-	float4x4 gLightVP;
-	float4x4 gTLightVP;
-	float gTime;
-	Light light;
-};
-
-cbuffer cbMat : register(b2)
-{
-	float4 gDiffuseAlbedo;
-	float3 gFresnelR0;
-	float gRoughness;
-	float4x4 gMatTransform;
-};
-
-Texture2D gDiffuseMap : register(t0);
-Texture2D gNormalMap : register(t1);
-
-SamplerState gSamplerWrap : register(s0);
-
-
 struct VertexIn
 {
 	float3 PosL  : POSITION;
@@ -44,10 +16,58 @@ struct VertexIn
 struct VertexOut
 {
 	float4 PosH  : SV_POSITION;
+	float4 ShadowPosH : POSITION0;
 	float4 Color : COLOR;
 	float4 Normal : NORMAL;
 	float4 UV : UV;
 };
+
+float CalcShadowFactor(float4 shadowPosH)
+{
+    // Complete projection by doing division by w.
+    shadowPosH.xyz /= shadowPosH.w;
+
+    // Depth in NDC space.
+    float depth = shadowPosH.z;
+
+    uint width, height, numMips;
+    gShadowMap.GetDimensions(0, width, height, numMips);
+    float2 pixelPos = shadowPosH.xy * width;
+    float depthInMap = gShadowMap.Load(int3(pixelPos, 0)).r;
+    return depth > depthInMap ? 0 : 1;
+}
+
+//float CalcShadowFactorPro(float4 shadowPosH)
+//{
+//    // Complete projection by doing division by w.
+//    shadowPosH.xyz /= shadowPosH.w;
+//
+//    // Depth in NDC space.
+//    float depth = shadowPosH.z;
+//
+//    uint width, height, numMips;
+//    gShadowMap.GetDimensions(0, width, height, numMips);
+//
+//    // Texel size.
+//    float dx = 1.0f / (float)width;
+//
+//    float percentLit = 0.0f;
+//    const float2 offsets[9] =
+//    {
+//        float2(-dx,  -dx), float2(0.0f,  -dx), float2(dx,  -dx),
+//        float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
+//        float2(-dx,  +dx), float2(0.0f,  +dx), float2(dx,  +dx)
+//    };
+//
+//    [unroll]
+//    for (int i = 0; i < 9; ++i)
+//    {
+//        percentLit += gShadowMap.SampleCmpLevelZero(gsamShadow,
+//            shadowPosH.xy + offsets[i], depth).r;
+//    }
+//
+//    return percentLit / 9.0f;
+//}
 
 [RootSignature(Common_RootSig)]
 VertexOut VS(VertexIn vin)
@@ -62,6 +82,10 @@ VertexOut VS(VertexIn vin)
 
 	vout.UV = vin.UV;
 
+	vout.Color = vin.Color;
+
+	vout.ShadowPosH = mul(float4(PosW, 1.0f), gTLightVP);
+
 	return vout;
 }
 
@@ -70,10 +94,13 @@ float4 PS(VertexOut pin) : SV_Target
 {
 	float4 diffuseAlbedo = gDiffuseMap.Sample(gSamplerWrap, pin.UV);
 	float4 normalMap = gNormalMap.Sample(gSamplerWrap, pin.UV);
+
+	float shadowFactor = CalcShadowFactor(pin.ShadowPosH);
+
 	//float4 finalCol = diffuseAlbedo + normalMap;
-	float4 finalCol = diffuseAlbedo;
+	float4 finalCol = diffuseAlbedo * (shadowFactor + 0.1);
+	//float4 finalCol = shadowFactor * diffuseAlbedo;
 	return pow(finalCol * 0.5f + 0.5f, 1 / 2.2f);
 	//return pow(pin.Normal * 0.5f + 0.5f, 1 / 2.2f);
 }
-
 
