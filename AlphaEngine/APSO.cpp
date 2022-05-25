@@ -94,7 +94,7 @@ APSO APSOManager::BuildShadowPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AS
 	};
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.RasterizerState.FrontCounterClockwise = TRUE;
-	psoDesc.RasterizerState.DepthBias = 10000;
+	psoDesc.RasterizerState.DepthBias = 100000;
 	psoDesc.RasterizerState.DepthBiasClamp = 0.0f;
 	psoDesc.RasterizerState.SlopeScaledDepthBias = 1.0f;
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);

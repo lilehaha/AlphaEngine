@@ -50,3 +50,4 @@ Texture2D gNormalMap : register(t1);
 Texture2D gShadowMap : register(t2);
 
 SamplerState gSamplerWrap : register(s0);
+SamplerComparisonState gSamShadow : register(s1);

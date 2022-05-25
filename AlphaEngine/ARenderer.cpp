@@ -70,9 +70,9 @@ void ARenderer::RenderStart()
 
 void ARenderer::UpdateShadowTransform(std::shared_ptr<ARenderScene> RenderScene)
 {
-	float Radius = 2000;
+	float Radius = 450;
 	glm::vec3 direction =  AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
-	glm::vec3 lightPos = -2.0f * Radius * AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
+	glm::vec3 lightPos = -1.0f * Radius * AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
 	float Time = AEngine::GetSingleton().GetTotalTime() / 3;
 	direction.x = direction.x * glm::cos(Time) - direction.y * glm::sin(Time);
 	direction.y = direction.y * glm::cos(Time) + direction.x * glm::sin(Time);
