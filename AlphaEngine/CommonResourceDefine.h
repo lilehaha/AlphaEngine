@@ -45,7 +45,7 @@ struct StaticMeshInfo
 	std::vector<FVector> Vertices;
 	std::vector<FVector4> Normals;
 	std::vector<FVector4> TangentXs;
-	std::vector<FVector4> TangentYs;
+	std::vector<FVector> TangentYs;
 	std::vector<FVector2D> UVs;
 };
 

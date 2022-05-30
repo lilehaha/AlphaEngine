@@ -23,6 +23,14 @@ struct Light {
 	float3 Direction;
 	float Strength;
 };
+
+struct Material {
+	float4 DiffuseAlbedo;
+	float3 FresnelR0;
+	float Roughness;
+	float Shininess;
+};
+
 float3 CameraLoc : register(b0);
 
 cbuffer cbPerObject : register(b1)

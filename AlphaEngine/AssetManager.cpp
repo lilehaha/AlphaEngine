@@ -50,7 +50,7 @@ void AssetManager::LoadStaticMesh(std::string& FilePath)
 		//tangentYs
 		fin.read((char*)&len, sizeof(int32_t));
 		meshInfo->TangentYs.resize(len);
-		fin.read((char*)meshInfo->TangentYs.data(), sizeof(FVector4) * len);
+		fin.read((char*)meshInfo->TangentYs.data(), sizeof(FVector) * len);
 		//UVs
 		fin.read((char*)&len, sizeof(int32_t));
 		meshInfo->UVs.resize(len);
