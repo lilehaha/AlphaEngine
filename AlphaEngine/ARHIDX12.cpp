@@ -142,12 +142,12 @@ void ARHIDX12::Update(int CBIndex, std::shared_ptr<ARenderScene> RenderScene, AR
 	objConstants.world = renderItem->mWorld;
 	objConstants.viewProj = glm::transpose(proj * view);
 	objConstants.Rotation = renderItem->mRotation;
-	objConstants.Time = AEngine::GetSingleton().GetTotalTime();
-	objConstants.directionalLight.Location = AEngine::GetSingleton().GetScene()->DirectionalLight.Location;
-	objConstants.directionalLight.Brightness = AEngine::GetSingleton().GetScene()->DirectionalLight.Brightness;
 	objConstants.LightVP = RenderScene->LightVP;
 	objConstants.TLightVP = RenderScene->TLightVP;
-
+	//objConstants.Time = AEngine::GetSingleton().GetTotalTime();
+	objConstants.directionalLight.Location = AEngine::GetSingleton().GetScene()->DirectionalLight.Location;
+	objConstants.directionalLight.Direction = AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
+	objConstants.directionalLight.Brightness = AEngine::GetSingleton().GetScene()->DirectionalLight.Brightness;
 	mObjectCB->CopyData(CBIndex, objConstants);
 }
 
@@ -666,7 +666,7 @@ void ARHIDX12::SetGraphicsRoot32BitConstants(int Width, int Height)
 {
 	//int renderTargetSize[4] = { AEngine::GetSingleton().GetWindow()->GetWidth(), AEngine::GetSingleton().GetWindow()->GetHeight(),Width,Height };
 	//mCommandList->SetGraphicsRoot32BitConstants(0, 4, &renderTargetSize, 0);
-	mCommandList->SetGraphicsRoot32BitConstants(0, 3, &mCameraLoc, 0);
+	mCommandList->SetGraphicsRoot32BitConstants(0, 4, &mCameraLoc, 0);
 }
 
 void ARHIDX12::DrawIndexedInstanced(std::shared_ptr<ARenderItem> renderItem, const std::string& Name)

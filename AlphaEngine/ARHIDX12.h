@@ -67,7 +67,7 @@ public:
 	void BuildPSO(std::shared_ptr<ARenderItem> renderItem, AMaterial Mat) override;
 	virtual void ChangePSOState(AMaterial Mat, const APSO& PSO, const std::wstring& Shader)override;
 	virtual void ClearAndSetRenderTatget(unsigned __int64 ClearRenderTargetHand, unsigned __int64 ClearDepthStencilHand, int numTatgetDescriptors, unsigned __int64 SetRenderTargetHand,
-		bool RTsSingleHandleToDescriptorRange, unsigned __int64 SetDepthStencilHand) override;
+	bool RTsSingleHandleToDescriptorRange, unsigned __int64 SetDepthStencilHand) override;
 	virtual void ExecuteCommandLists() override;
 	virtual void CreateTextureResource(std::shared_ptr<ARenderScene> RenderScene, std::shared_ptr<ATexture> Texture) override;
 

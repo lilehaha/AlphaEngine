@@ -61,6 +61,8 @@ struct Vertex
 	glm::vec3 Pos;
 	glm::vec4 Color;
 	glm::vec4 Normal;
+	glm::vec4 TangentX;
+	glm::vec3 TangentY;
 	glm::vec2 UV;
 };
 
@@ -68,6 +70,13 @@ struct MeshData
 {
 	std::vector<Vertex> Vertices;
 	std::vector<uint32_t> Indices;
+};
+
+struct LightT
+{
+	glm::vec4 Location;
+	glm::vec3 Direction;
+	float Brightness;
 };
 
 struct ObjectConstants
@@ -78,14 +87,15 @@ struct ObjectConstants
 	glm::mat4x4 TexTransform = glm::identity<glm::mat4x4>();
 	glm::mat4x4 LightVP = glm::identity<glm::mat4x4>();
 	glm::mat4x4 TLightVP = glm::identity<glm::mat4x4>();
-	float Time;
-	ADirectionalLight directionalLight;
+	//float Time;
+	//ADirectionalLight directionalLight;
+	LightT directionalLight;
 };
 
 struct MatConstants
 {
 	glm::vec4 Diffuse = { 1.0f,1.0f, 1.0f, 1.0f };
-	glm::vec3 FresnelR0 = { 0.1f, 0.1f, 0.1f };
+	glm::vec3 FresnelR0 = { 0.5f, 0.5f, 0.5f };
 	float Roughness = 0.01f;
 	glm::mat4x4 Transform = glm::identity<glm::mat4x4>();
 };

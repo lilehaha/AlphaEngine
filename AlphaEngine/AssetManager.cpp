@@ -12,7 +12,6 @@ AssetManager::~AssetManager()
 	{
 		ReleasePtr(mesh.second);
 	}
-
 }
 
 void AssetManager::LoadStaticMesh(std::string& FilePath)
@@ -86,12 +85,12 @@ void AssetManager::LoadTextures()
 {
 	auto tex_D_0 = std::make_unique<ATexture>(E_TexType::Diffuse);
 	tex_D_0->mName = "Null";
-	tex_D_0->mFilePath = L"..\\AlphaEngine\\Data\\Textures\\Default_D.dds";
+	tex_D_0->mFilePath = L"..\\AlphaEngine\\Data\\Textures\\Metal_Gold_D.dds";
 	mDiffuseTextures.push_back(std::move(tex_D_0));
 	
 	auto tex_N_0 = std::make_unique<ATexture>(E_TexType::Normal);
 	tex_N_0->mName = "Null";
-	tex_N_0->mFilePath = L"..\\AlphaEngine\\Data\\Textures\\Default_N.dds";
+	tex_N_0->mFilePath = L"..\\AlphaEngine\\Data\\Textures\\Metal_Gold_N.dds";
 	mNormalTextures.push_back(std::move(tex_N_0));
 
 	auto tex_D_1 = std::make_unique<ATexture>(E_TexType::Diffuse);

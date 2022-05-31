@@ -10,6 +10,8 @@ struct VertexIn
 	float3 PosL  : POSITION;
 	float4 Color : COLOR;
 	float4 Normal : NORMAL;
+	float4 TangentX : TANGENTX;
+	float3 TangentY : TANGENTY;
 	float2 UV : UV;
 };
 
@@ -18,55 +20,57 @@ struct VertexOut
 	float4 PosH  : SV_POSITION;
 	float4 ShadowPosH : POSITION0;
 	float4 Color : COLOR;
-	float4 Normal : NORMAL;
+	float3 NormalW : NORMAL;
+	float3 TangentW : TANGENTX;
+	float3 BiTangent : TANGENTY;
 	float2 UV : UV;
 };
 
 float CalcShadowFactor(float4 shadowPosH)
 {
-    // Complete projection by doing division by w.
-    shadowPosH.xyz /= shadowPosH.w;
+	// Complete projection by doing division by w.
+	shadowPosH.xyz /= shadowPosH.w;
 
-    // Depth in NDC space.
-    float depth = shadowPosH.z;
+	// Depth in NDC space.
+	float depth = shadowPosH.z;
 
-    uint width, height, numMips;
-    gShadowMap.GetDimensions(0, width, height, numMips);
-    float2 pixelPos = shadowPosH.xy * width;
-    float depthInMap = gShadowMap.Load(int3(pixelPos, 0)).r;
-    return depth > depthInMap ? 0 : 1;
+	uint width, height, numMips;
+	gShadowMap.GetDimensions(0, width, height, numMips);
+	float2 pixelPos = shadowPosH.xy * width;
+	float depthInMap = gShadowMap.Load(int3(pixelPos, 0)).r;
+	return depth > depthInMap ? 0 : 1;
 }
 
 float CalcShadowFactorPro(float4 shadowPosH)
 {
-    // Complete projection by doing division by w.
-    shadowPosH.xyz /= shadowPosH.w;
+	// Complete projection by doing division by w.
+	shadowPosH.xyz /= shadowPosH.w;
 
-    // Depth in NDC space.
-    float depth = shadowPosH.z;
+	// Depth in NDC space.
+	float depth = shadowPosH.z;
 
-    uint width, height, numMips;
-    gShadowMap.GetDimensions(0, width, height, numMips);
+	uint width, height, numMips;
+	gShadowMap.GetDimensions(0, width, height, numMips);
 
-    // Texel size.
-    float dx = 1.0f / (float)width;
+	// Texel size.
+	float dx = 1.0f / (float)width;
 
-    float percentLit = 0.0f;
-    const float2 offsets[9] =
-    {
-        float2(-dx,  -dx), float2(0.0f,  -dx), float2(dx,  -dx),
-        float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
-        float2(-dx,  +dx), float2(0.0f,  +dx), float2(dx,  +dx)
-    };
+	float percentLit = 0.0f;
+	const float2 offsets[9] =
+	{
+		float2(-dx,  -dx), float2(0.0f,  -dx), float2(dx,  -dx),
+		float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
+		float2(-dx,  +dx), float2(0.0f,  +dx), float2(dx,  +dx)
+	};
 
-    [unroll]
-    for (int i = 0; i < 9; ++i)
-    {
-        percentLit += gShadowMap.SampleCmpLevelZero(gSamShadow,
-            shadowPosH.xy + offsets[i], depth).r;
-    }
+	[unroll]
+	for (int i = 0; i < 9; ++i)
+	{
+		percentLit += gShadowMap.SampleCmpLevelZero(gSamShadow,
+			shadowPosH.xy + offsets[i], depth).r;
+	}
 
-    return percentLit / 9.0f;
+	return percentLit / 9.0f;
 }
 
 float3 SchlickFresnel(float3 R0, float3 normal, float3 lightVec)
@@ -84,7 +88,7 @@ float3 BlinnPhong(float3 lightStrength, float3 lightVec, float3 normal, float3 t
 	const float m = mat.Shininess * 256.0f;
 	float3 halfVec = normalize(toEye + lightVec);
 
-	float roughnessFactor = (m + 8.0f) * pow(max(dot(halfVec, normal) * 0.5 + 0.5, 0.0f), m) / 8.0f;
+	float roughnessFactor = (m + 8.0f) * pow(max(dot(halfVec, normal), 0.0f), m) / 8.0f;
 	float3 fresnelFactor = SchlickFresnel(mat.FresnelR0, halfVec, lightVec);
 
 	float3 specAlbedo = fresnelFactor * roughnessFactor;
@@ -99,11 +103,11 @@ float3 BlinnPhong(float3 lightStrength, float3 lightVec, float3 normal, float3 t
 float3 ComputeDirectionalLight(Light L, Material mat, float3 normal, float3 toEye)
 {
 	// The light vector aims opposite the direction the light rays travel.
-	float3 lightVec = L.Direction;
+	float3 lightVec = -L.Direction;
 
 	// Scale light down by Lambert's cosine law.
-	float ndotl = max(dot(lightVec, normal) * 0.5 + 0.5, 0.0f);
-	float3 lightStrength = L.Strength * ndotl;
+	float ndotl = max(dot(lightVec, normal), 0.0f);
+	float3 lightStrength = L.Strength * ndotl*0.5f;
 
 	return BlinnPhong(lightStrength, lightVec, normal, toEye, mat);
 }
@@ -136,17 +140,22 @@ VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
 
-	vout.Normal = mul(vin.Normal, gRotation);
-
-	float3 PosW = mul(float4(vin.PosL, 1.0f), gWorld).xyz;
-
-	vout.PosH = mul(float4(PosW, 1.0f), gViewProj);
-
-	vout.UV = vin.UV;
+	float4 PosW = mul(float4(vin.PosL, 1.0f), gWorld);
+	vout.PosH = mul(PosW, gViewProj);
 
 	vout.Color = vin.Color;
 
-	vout.ShadowPosH = mul(float4(PosW, 1.0f), gTLightVP);
+	vout.NormalW = mul(vin.Normal.xyz, (float3x3)gWorld);
+	//vout.NormalR = mul(vin.Normal, gRotation).xyz;
+
+	vout.TangentW = mul(vin.TangentX, (float3x3)gWorld);
+	//vout.BiTangent = mul(vin.TangentY, gRotation).xyz;
+
+	vout.ShadowPosH = mul(PosW, gTLightVP);
+
+	//float4 texUV = mul(float4(vin.UV, 0.0f, 1.0f), gTexTransform);
+	//vout.UV = texUV.xy;
+	vout.UV = vin.UV;
 
 	return vout;
 }
@@ -154,40 +163,40 @@ VertexOut VS(VertexIn vin)
 [RootSignature(Common_RootSig)]
 float4 PS(VertexOut pin) : SV_Target
 {
+
 	float4 diffuseAlbedo = gDiffuseMap.Sample(gSamplerWrap, pin.UV);
+	//diffuseAlbedo *= gDiffuseAlbedo;
 	float4 normalMap = gNormalMap.Sample(gSamplerWrap, pin.UV);
 
-	float shadowFactor = CalcShadowFactorPro(pin.ShadowPosH);
-
-	//float4 finalCol = diffuseAlbedo + normalMap;
-	float4 finalCol = diffuseAlbedo * (shadowFactor + 0.1);
-
-	return pow(finalCol * 0.5f + 0.5f, 1 / 2.2f);
-
-	/*float4 diffuseAlbedo = gDiffuseAlbedo;
-	float3 fresnelR0 = gFresnelR0;
-	float  roughness = gRoughness;
-	diffuseAlbedo *= gDiffuseMap.Sample(gSamplerWrap, pin.UV);
-
 	pin.TangentW = normalize(pin.TangentW);
-	pin.Normal = normalize(pin.Normal);
-	float4 normalMap = gNormalMap.Sample(gsamPointWrap, pin.TexC);
+	pin.NormalW = normalize(pin.NormalW);
+
 	float3 bumpedNormalW;
 	if (normalMap.r == 0 && normalMap.g == 0 && normalMap.b == 0) {
-		bumpedNormalW = NormalSampleToWorldSpace(normalMap.rgb, pin.Normal, pin.TangentW);
+		bumpedNormalW = NormalSampleToWorldSpace(normalMap.rgb, pin.NormalW, pin.TangentW);
 	}
 	else {
-		bumpedNormalW = pin.Normal;
+		bumpedNormalW = pin.NormalW;
 	}
+	float shadowFactor = CalcShadowFactorPro(pin.ShadowPosH);
+
+	float3 fresnelR0 = gFresnelR0;
+	float  roughness = gRoughness;
 	float4 gAmbientLight = diffuseAlbedo * 0.1;
 	float4 ambient = gAmbientLight * diffuseAlbedo;
 	float3 toEyeW = normalize(CameraLoc - pin.PosH);
-	float shadowFactor = CalcShadowFactor(pin.ShadowPosH);
 	const float shininess = (1.0f - roughness) * normalMap.a;
 	Material mat = { diffuseAlbedo, fresnelR0, roughness ,shininess };
+
 	float4 directLight = ComputeLighting(light, mat, pin.PosH,
 		bumpedNormalW, toEyeW, shadowFactor);
-	float4 litColor = ambient + directLight;
-	return litColor;*/
+	//float4 finalCol = diffuseAlbedo + normalMap;
+	//float4 finalCol = diffuseAlbedo * (shadowFactor + 0.1);
+	//float4 finalCol = ambient + directLight;
+	float4 finalCol = ambient + directLight;
+
+
+	//return finalCol;
+	return pow(finalCol, 1 / 2.2f);
 }
 

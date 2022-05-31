@@ -74,10 +74,10 @@ void ARenderer::UpdateShadowTransform(std::shared_ptr<ARenderScene> RenderScene)
 	glm::vec3 direction =  AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
 	glm::vec3 lightPos = -1.0f * Radius * AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
 	float Time = AEngine::GetSingleton().GetTotalTime() / 3;
-	direction.x = direction.x * glm::cos(Time) - direction.y * glm::sin(Time);
+	/*direction.x = direction.x * glm::cos(Time) - direction.y * glm::sin(Time);
 	direction.y = direction.y * glm::cos(Time) + direction.x * glm::sin(Time);
 	lightPos.x = lightPos.x * glm::cos(Time) - lightPos.y * glm::sin(Time);
-	lightPos.y = lightPos.y * glm::cos(Time) + lightPos.x * glm::sin(Time);
+	lightPos.y = lightPos.y * glm::cos(Time) + lightPos.x * glm::sin(Time);*/
 	RenderScene->LightDirection = direction;
 	glm::mat4x4 lightView = glm::lookAtLH(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	glm::vec3 sphereCenterLS = MathHelper::Vector3TransformCoord(glm::vec3(0.0f, 0.0f, 0.0f), lightView);
