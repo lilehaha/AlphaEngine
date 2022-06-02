@@ -74,10 +74,10 @@ void ARenderer::UpdateShadowTransform(std::shared_ptr<ARenderScene> RenderScene)
 	glm::vec3 direction =  AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
 	glm::vec3 lightPos = -1.0f * Radius * AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
 	float Time = AEngine::GetSingleton().GetTotalTime() / 3;
-	/*direction.x = direction.x * glm::cos(Time) - direction.y * glm::sin(Time);
+	direction.x = direction.x * glm::cos(Time) - direction.y * glm::sin(Time);
 	direction.y = direction.y * glm::cos(Time) + direction.x * glm::sin(Time);
 	lightPos.x = lightPos.x * glm::cos(Time) - lightPos.y * glm::sin(Time);
-	lightPos.y = lightPos.y * glm::cos(Time) + lightPos.x * glm::sin(Time);*/
+	lightPos.y = lightPos.y * glm::cos(Time) + lightPos.x * glm::sin(Time);
 	RenderScene->LightDirection = direction;
 	glm::mat4x4 lightView = glm::lookAtLH(lightPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	glm::vec3 sphereCenterLS = MathHelper::Vector3TransformCoord(glm::vec3(0.0f, 0.0f, 0.0f), lightView);
@@ -134,8 +134,8 @@ void ARenderer::UpdateRenderItemTrans(std::shared_ptr<ARenderScene> sceneResourc
 void ARenderer::BasePass(int RTVNumber, const std::string& PSOName)
 {
 	mRHI->BeginEvent(PSOName);
-	mRHI->RSSetViewports(0.0f, 0.0f, (float)AEngine::GetSingleton().GetWindow()->GetWidth(), AEngine::GetSingleton().GetWindow()->GetHeight(), 0.0f, 1.0f);
-	mRHI->RSSetScissorRects(0, 0, (float)AEngine::GetSingleton().GetWindow()->GetWidth(), AEngine::GetSingleton().GetWindow()->GetHeight());
+	mRHI->RSSetViewports(0.0f, 0.0f, (float)AEngine::GetSingleton().GetWindow()->GetWidth(), (float)AEngine::GetSingleton().GetWindow()->GetHeight(), 0.0f, 1.0f);
+	mRHI->RSSetScissorRects(0, 0, (long)AEngine::GetSingleton().GetWindow()->GetWidth(), (long)AEngine::GetSingleton().GetWindow()->GetHeight());
 
 	mRHI->ResourceBarrier(1, mRHIResource->BackBuffer(), RESOURCE_STATES::PRESENT, RESOURCE_STATES::RENDER_TARGET);
 

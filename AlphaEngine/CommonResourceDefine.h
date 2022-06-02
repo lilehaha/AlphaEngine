@@ -95,7 +95,7 @@ struct ObjectConstants
 struct MatConstants
 {
 	glm::vec4 Diffuse = { 1.0f,1.0f, 1.0f, 1.0f };
-	glm::vec3 FresnelR0 = { 0.5f, 0.5f, 0.5f };
-	float Roughness = 0.01f;
+	glm::vec3 FresnelR0 = { 0.01f, 0.01f, 0.10f };
+	float Roughness = 0.25f;
 	glm::mat4x4 Transform = glm::identity<glm::mat4x4>();
 };

@@ -95,12 +95,12 @@ void AssetManager::LoadTextures()
 
 	auto tex_D_1 = std::make_unique<ATexture>(E_TexType::Diffuse);
 	tex_D_1->mName = "Floor_400x400";
-	tex_D_1->mFilePath = L"..\\AlphaEngine\\Data\\Textures\\Stone_D.dds";
+	tex_D_1->mFilePath = L"..\\AlphaEngine\\Data\\Textures\\Default_D.dds";
 	mDiffuseTextures.push_back(std::move(tex_D_1));
 
 	auto tex_N_1 = std::make_unique<ATexture>(E_TexType::Normal);
 	tex_N_1->mName = "Floor_400x400";
-	tex_N_1->mFilePath = L"..\\AlphaEngine\\Data\\Textures\\Stone_N.dds";
+	tex_N_1->mFilePath = L"..\\AlphaEngine\\Data\\Textures\\Default_N.dds";
 	mNormalTextures.push_back(std::move(tex_N_1));
 }
 

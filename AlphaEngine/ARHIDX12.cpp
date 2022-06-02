@@ -146,7 +146,7 @@ void ARHIDX12::Update(int CBIndex, std::shared_ptr<ARenderScene> RenderScene, AR
 	objConstants.TLightVP = RenderScene->TLightVP;
 	//objConstants.Time = AEngine::GetSingleton().GetTotalTime();
 	objConstants.directionalLight.Location = AEngine::GetSingleton().GetScene()->DirectionalLight.Location;
-	objConstants.directionalLight.Direction = AEngine::GetSingleton().GetScene()->DirectionalLight.Direction;
+	objConstants.directionalLight.Direction = RenderScene->LightDirection;
 	objConstants.directionalLight.Brightness = AEngine::GetSingleton().GetScene()->DirectionalLight.Brightness;
 	mObjectCB->CopyData(CBIndex, objConstants);
 }

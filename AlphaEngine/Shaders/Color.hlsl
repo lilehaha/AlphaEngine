@@ -19,8 +19,10 @@ struct VertexOut
 {
 	float4 PosH  : SV_POSITION;
 	float4 ShadowPosH : POSITION0;
+	float3 PosW : POSITION1;
 	float4 Color : COLOR;
-	float3 NormalW : NORMAL;
+	float3 NormalW : NORMALW;
+	float3 NormalR : NORMALR;
 	float3 TangentW : TANGENTX;
 	float3 BiTangent : TANGENTY;
 	float2 UV : UV;
@@ -107,7 +109,7 @@ float3 ComputeDirectionalLight(Light L, Material mat, float3 normal, float3 toEy
 
 	// Scale light down by Lambert's cosine law.
 	float ndotl = max(dot(lightVec, normal), 0.0f);
-	float3 lightStrength = L.Strength * ndotl*0.5f;
+	float3 lightStrength = L.Strength * ndotl * 0.3f;
 
 	return BlinnPhong(lightStrength, lightVec, normal, toEye, mat);
 }
@@ -142,14 +144,16 @@ VertexOut VS(VertexIn vin)
 
 	float4 PosW = mul(float4(vin.PosL, 1.0f), gWorld);
 	vout.PosH = mul(PosW, gViewProj);
-
-	vout.Color = vin.Color;
+	vout.PosW = mul(float4(vin.PosL, 1.0f), gWorld).xyz;
 
 	vout.NormalW = mul(vin.Normal.xyz, (float3x3)gWorld);
-	//vout.NormalR = mul(vin.Normal, gRotation).xyz;
+	vout.NormalR = mul(vin.Normal, gRotation).xyz;
 
-	vout.TangentW = mul(vin.TangentX, (float3x3)gWorld);
-	//vout.BiTangent = mul(vin.TangentY, gRotation).xyz;
+	vout.Color = float4(vout.NormalR * 0.5 + 0.5, 1.0f);
+
+	vout.TangentW = mul(vin.TangentX, gRotation).xyz;
+
+	vout.BiTangent = mul(vin.TangentY, (float3x3)gRotation);
 
 	vout.ShadowPosH = mul(PosW, gTLightVP);
 
@@ -168,33 +172,39 @@ float4 PS(VertexOut pin) : SV_Target
 	//diffuseAlbedo *= gDiffuseAlbedo;
 	float4 normalMap = gNormalMap.Sample(gSamplerWrap, pin.UV);
 
-	pin.TangentW = normalize(pin.TangentW);
-	pin.NormalW = normalize(pin.NormalW);
+	//pin.TangentW = normalize(pin.TangentW);
+	//pin.NormalR = normalize(pin.NormalR);
 
-	float3 bumpedNormalW;
+	float3x3 TBN = float3x3(pin.TangentW, pin.BiTangent, pin.NormalW);
+	float3 bumpedNormalW = normalize(mul((2.0f * normalMap - 1.0f).xyz, TBN));
+
+	//bumpedNormalW = pin.NormalR;
+
+	/*float3 bumpedNormalW;
 	if (normalMap.r == 0 && normalMap.g == 0 && normalMap.b == 0) {
-		bumpedNormalW = NormalSampleToWorldSpace(normalMap.rgb, pin.NormalW, pin.TangentW);
+		bumpedNormalW = NormalSampleToWorldSpace(normalMap.rgb, pin.NormalR, pin.TangentW);
 	}
 	else {
-		bumpedNormalW = pin.NormalW;
-	}
+		bumpedNormalW = pin.NormalR;
+	}*/
 	float shadowFactor = CalcShadowFactorPro(pin.ShadowPosH);
+
+	float4 gAmbientLight = diffuseAlbedo * 0.03;
+	float4 ambient = gAmbientLight * diffuseAlbedo;
+	float3 toEyeW = normalize(CameraLoc.xyz - pin.PosW);
 
 	float3 fresnelR0 = gFresnelR0;
 	float  roughness = gRoughness;
-	float4 gAmbientLight = diffuseAlbedo * 0.1;
-	float4 ambient = gAmbientLight * diffuseAlbedo;
-	float3 toEyeW = normalize(CameraLoc - pin.PosH);
-	const float shininess = (1.0f - roughness) * normalMap.a;
+	const float shininess = 1.0f - roughness;
 	Material mat = { diffuseAlbedo, fresnelR0, roughness ,shininess };
 
-	float4 directLight = ComputeLighting(light, mat, pin.PosH,
-		bumpedNormalW, toEyeW, shadowFactor);
+	//float4 directLight = ComputeLighting(light, mat, pin.PosH.xyz, bumpedNormalW, toEyeW, shadowFactor);
+	float4 directLight = float4(ComputeDirectionalLight(light, mat, bumpedNormalW, toEyeW),1.0f);
 	//float4 finalCol = diffuseAlbedo + normalMap;
+	//float4 finalCol = pin.Color;
 	//float4 finalCol = diffuseAlbedo * (shadowFactor + 0.1);
+	float4 finalCol = ambient + (shadowFactor + 0.1f) * directLight;
 	//float4 finalCol = ambient + directLight;
-	float4 finalCol = ambient + directLight;
-
 
 	//return finalCol;
 	return pow(finalCol, 1 / 2.2f);
