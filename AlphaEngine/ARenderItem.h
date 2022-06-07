@@ -13,6 +13,7 @@ public:
 	UINT mCBHeapIndex = -1;
 	UINT mMatCBIndex = -1;
 	UINT mSrvCBIndex = -1;
+	std::vector<UINT> ObjRtvIndex;
 	std::unique_ptr<DXBuffer> mGeo = nullptr;
 	std::string MatName;
 

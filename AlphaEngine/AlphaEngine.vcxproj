@@ -154,6 +154,7 @@
     <ClInclude Include="ADirectionalLight.h" />
     <ClInclude Include="AEngine.h" />
     <ClInclude Include="AGameTimer.h" />
+    <ClInclude Include="AHDRResource.h" />
     <ClInclude Include="AInput.h" />
     <ClInclude Include="AInputWin32.h" />
     <ClInclude Include="AMaterial.h" />
@@ -198,6 +199,7 @@
     <ClCompile Include="ADirectionalLight.cpp" />
     <ClCompile Include="AEngine.cpp" />
     <ClCompile Include="AGameTimer.cpp" />
+    <ClCompile Include="AHDRResource.cpp" />
     <ClCompile Include="AInputWin32.cpp" />
     <ClCompile Include="AMaterial.cpp" />
     <ClCompile Include="AMaterialManager.cpp" />
@@ -241,6 +243,19 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\HightLight.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compute</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
       <FileType>Document</FileType>
     </None>
   </ItemGroup>

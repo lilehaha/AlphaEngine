@@ -6,7 +6,8 @@
 enum class E_PSOType
 {
 	Base = 0,
-	Shadow = 1
+	Shadow = 1,
+	Bloom = 2
 };
 
 enum INPUT_CLASSIFICATION
@@ -41,6 +42,7 @@ public:
 	APSO& CreatePSO(E_PSOType PSOType, std::vector<INPUT_ELEMENT_DESC> InputLayout,AShader* Shader);
 	APSO BuildBasePSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
 	APSO BuildShadowPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
+	APSO BuildBloomPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
 private:
 	std::unordered_map<E_PSOType, APSO> mPSOs;
 	APSO mPso;

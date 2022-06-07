@@ -1,7 +1,6 @@
 #pragma once
 #include "stdafx.h"
 #include "ARenderResource.h"
-#include "AResource.h"
 
 class AShadowResource : public ARenderResource
 {

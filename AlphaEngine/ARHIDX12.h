@@ -41,7 +41,7 @@ private:
 
 	void BuildDescriptorHeaps();
 	void BuildConstantBuffers(ARenderItem* renderItem);
-	void BuildShaderResourceView(const std::string& ActorName, ARenderItem* RenderItem, const std::string& MeshName, ARenderResource* RenderResource, std::shared_ptr<ARenderScene> RenderScene);
+	void BuildShaderResourceView(const std::string& ActorName, ARenderItem* RenderItem, const std::string& MeshName, ARenderResource* RenderResource, ARenderResource* HDRResource, std::shared_ptr<ARenderScene> RenderScene);
 	void BuildRootSignature(AShader* shader);
 	void BuildShadersAndInputLayout();
 	void ClearRenderTargetView(unsigned __int64 ptr);
@@ -58,7 +58,7 @@ private:
 	void BuildRenderItem(std::shared_ptr<ARenderScene> sceneResource, const std::string& MatName);
 public:
 	virtual void RenderFrameBegin(std::shared_ptr<ARenderScene> renderResource, const std::string& MatName) override;
-	virtual void CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, ARenderResource* shadowResource, std::shared_ptr<ARenderScene> RenderScene) override;
+	virtual void CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, ARenderResource* shadowResource, ARenderResource* HDRResource, std::shared_ptr<ARenderScene> RenderScene) override;
 	virtual void ResetCommand(const std::string& PSOName) override;
 	virtual void RSSetViewports(float TopLeftX, float TopLeftY, float Width, float Height, float MinDepth, float MaxDepth) override;
 	virtual void RSSetScissorRects(long left, long top, long right, long bottom) override;

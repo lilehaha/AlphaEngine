@@ -42,4 +42,23 @@ const AMaterial& AMaterialManager::GetMaterial(const std::string& MaterialName)
 		mMaterialMap["Base"] = mMaterial;
 		return mMaterialMap["Base"];
 	}
+	else if(MaterialName == "Bloom")
+	{
+		std::vector<INPUT_ELEMENT_DESC> mInputLayout;
+		mInputLayout =
+		{
+			{ "POSITION", 0, FORMAT_R32G32B32_FLOAT, 0, 0, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "COLOR", 0, FORMAT_R32G32B32A32_FLOAT, 0, 12, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, FORMAT_R32G32B32A32_FLOAT, 0, 28, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TANGENTX", 0, FORMAT_R32G32B32A32_FLOAT, 0, 44, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TANGENTY", 0, FORMAT_R32G32B32_FLOAT, 0, 60, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "UV", 0, FORMAT_R32G32_FLOAT, 0, 72, INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		};
+		mMaterial.Name = "Bloom";
+		mMaterial.mShaderFilePath = L"..\\AlphaEngine\\Shaders\\HightLight.hlsl";
+		mMaterial.mPSO = mPSOManager->CreatePSO(E_PSOType::Bloom, std::move(mInputLayout), AShaderManager::GetSingleton().CompileShader(mMaterial.mShaderFilePath));
+		mMaterialMap["Bloom"] = mMaterial;
+
+		return mMaterialMap["Bloom"];
+	}
 }

@@ -14,7 +14,7 @@ public:
 	virtual void Update(int CBIndex, std::shared_ptr<ARenderScene> RenderScene, ARenderItem* renderItem) = 0;
 
 	virtual void RenderFrameBegin(std::shared_ptr<ARenderScene> renderResource, const std::string& MatName) = 0;
-	virtual void CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, ARenderResource* shadowResource, std::shared_ptr<ARenderScene> RenderScene) = 0;
+	virtual void CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, ARenderResource* shadowResource, ARenderResource* HDRResource, std::shared_ptr<ARenderScene> RenderScene) = 0;
 	virtual void ResetCommand(const std::string& PSOName) = 0;
 	virtual void RSSetViewports(float TopLeftX, float TopLeftY, float Width, float Height, float MinDepth, float MaxDepth) = 0;
 	virtual void RSSetScissorRects(long left, long top, long right, long bottom) = 0;

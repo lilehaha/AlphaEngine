@@ -31,7 +31,7 @@ struct Material {
 	float Shininess;
 };
 
-float4 CameraLoc : register(b0);
+int2 RenderTargetSize : register(b0);
 
 cbuffer cbPerObject : register(b1)
 {
@@ -43,6 +43,7 @@ cbuffer cbPerObject : register(b1)
 	float4x4 gTLightVP;
 //	float gTime;
 	Light light;
+	float3 CameraLoc;
 };
 
 cbuffer cbMat : register(b2)

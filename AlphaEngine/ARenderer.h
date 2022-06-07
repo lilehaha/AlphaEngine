@@ -17,11 +17,13 @@ public:
 
 	void BasePass(int RTVNumber, const std::string& PSOName);
 	void ShadowPass();
+	void HDRPass();
 private:
 	std::unique_ptr<RHIBuilder> mRHIBuilder;
 	std::shared_ptr<ARHI> mRHI;
 	std::shared_ptr<ARHIResource> mRHIResource = nullptr;
 	std::shared_ptr<ARenderResource> mShadowResource = nullptr;
+	std::shared_ptr<ARenderResource> mHDRResource = nullptr;
 	std::shared_ptr<ARenderScene> mRenderScene;
 	glm::mat4x4 mWorld;
 };

@@ -37,5 +37,12 @@ std::unordered_map<std::string, MeshData>& ARenderScene::BuildMeshData()
 		mMeshDatas[Actor.first] = std::move(meshData);
 	}
 
+	HDRGeo = std::make_unique<MeshData>();
+	HDRTriangle = std::make_shared<ARenderItem>();
+	HDRGeo->Indices = { 0,1,2 };
+	HDRGeo->Vertices.resize(3);
+	HDRGeo->Vertices[0].Pos = { -1.0f,1.0f,0.0f };
+	HDRGeo->Vertices[1].Pos = { -1.0f,-3.0f,0.0f };
+	HDRGeo->Vertices[2].Pos = { 3.0f,1.0f,0.0f };
 	return mMeshDatas;
 }

@@ -3,6 +3,7 @@
 #include "AEngine.h"
 #include "AShadowResource.h"
 #include "DXRHIResource.h"
+#include "AHDRResource.h"
 
 ARenderer::ARenderer() : mRHIBuilder(nullptr),mRHI(nullptr)
 {
@@ -25,6 +26,7 @@ bool ARenderer::Init()
 	}
 	mShadowResource = mRHIBuilder->CreateShadowResource();
 	mRHIResource = mRHIBuilder->CreateRHIResource();
+	mHDRResource = mRHIBuilder->CreateHDRResource();
 	return true;
 }
 
@@ -41,6 +43,9 @@ void ARenderer::Render()
 	}
 	ShadowPass();
 	BasePass(1, "Base");
+
+	HDRPass();
+	
 	mRHI->ExecuteCommandLists();
 }
 
@@ -63,7 +68,7 @@ void ARenderer::RenderStart()
 
 	for (auto&& actorPair : AEngine::GetSingleton().GetScene()->GetAllActor())
 	{
-		mRHI->CreateCbHeapsAndSrv(actorPair.first, actorPair.second->StaticMeshNames[0], mRenderScene->mRenderItem[actorPair.first].get(), mShadowResource.get(), mRenderScene);
+		mRHI->CreateCbHeapsAndSrv(actorPair.first, actorPair.second->StaticMeshNames[0], mRenderScene->mRenderItem[actorPair.first].get(), mShadowResource.get(), mHDRResource.get(), mRenderScene);
 	}
 	mRHI->ExecuteCommandLists();
 }
@@ -167,5 +172,23 @@ void ARenderer::ShadowPass()
 		mRHI->Draw(RenderItem.second, RenderItem.first, true, false, 0, 1920, 1080);
 	}
 	mRHI->ResourceBarrier(1, std::dynamic_pointer_cast<AShadowResource>(mShadowResource)->GetResource(), RESOURCE_STATES::DEPTH_WRITE, RESOURCE_STATES::RESOURCE_STATE_GENERIC_READ);
+	mRHI->EndEvent();
+}
+
+void ARenderer::HDRPass()
+{
+	mRHI->BeginEvent("HDRPass");
+	mRHI->RSSetViewports(0.0f, 0.0f, (float)AEngine::GetSingleton().GetWindow()->GetWidth(), (float)AEngine::GetSingleton().GetWindow()->GetHeight(), 0.0f, 1.0f);
+	mRHI->RSSetScissorRects(0, 0, (long)AEngine::GetSingleton().GetWindow()->GetWidth(), (long)AEngine::GetSingleton().GetWindow()->GetHeight());
+	mRHI->ResourceBarrier(1, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->GetRTVResource(0), RESOURCE_STATES::COMMON, RESOURCE_STATES::RENDER_TARGET);
+	mRHI->ClearAndSetRenderTatget(std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->RTV(0), std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->DSV(0),
+		1, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->RTV(0), false, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->DSV(0));
+	for (auto&& RenderItem : mRenderScene->mRenderItem)
+	{
+		mRHI->ChangePSOState(AMaterialManager::GetSingleton().GetMaterial(RenderItem.second->MatName), AMaterialManager::GetSingleton().GetMaterial("Bloom").mPSO, AMaterialManager::GetSingleton().GetMaterial("Bloom").mShaderFilePath);
+		mRHI->SetPipelineState(RenderItem.second, AMaterialManager::GetSingleton().GetMaterial("Bloom"));
+		mRHI->Draw(RenderItem.second, RenderItem.first, false, false, 0, 1920, 1080);
+	}
+	mRHI->ResourceBarrier(1, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->GetRTVResource(0), RESOURCE_STATES::RENDER_TARGET, RESOURCE_STATES::COMMON);
 	mRHI->EndEvent();
 }

@@ -186,6 +186,9 @@
     <ClInclude Include="AShadowResource.h">
       <Filter>Header Files\Resource</Filter>
     </ClInclude>
+    <ClInclude Include="AHDRResource.h">
+      <Filter>Header Files\Resource</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AlphaEngine.rc">
@@ -295,6 +298,9 @@
     <ClCompile Include="DXRHIResource.cpp">
       <Filter>Source Files\Resource</Filter>
     </ClCompile>
+    <ClCompile Include="AHDRResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Color.hlsl">
@@ -304,6 +310,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\ShadowMap.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\HightLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
