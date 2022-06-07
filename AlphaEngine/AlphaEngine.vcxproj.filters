@@ -315,5 +315,23 @@
     <None Include="Shaders\HightLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\BloomSetup.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\BloomDown.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\BloomSunMerge.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\BloomUp.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PostProcessBlend.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ToneMapping.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

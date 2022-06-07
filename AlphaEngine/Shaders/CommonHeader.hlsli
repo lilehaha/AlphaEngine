@@ -16,7 +16,17 @@
 	"mipLODBias =0 ,"\
 	"maxAnisotropy = 16,"\
 	"comparisonFunc = COMPARISON_LESS_EQUAL,"\
-	"borderColor = STATIC_BORDER_COLOR_OPAQUE_BLACK)"\
+	"borderColor = STATIC_BORDER_COLOR_OPAQUE_BLACK),"\
+"StaticSampler(s2," \
+	"addressU = TEXTURE_ADDRESS_WRAP," \
+	"addressV = TEXTURE_ADDRESS_WRAP," \
+	"addressW = TEXTURE_ADDRESS_WRAP," \
+	"filter = FILTER_MIN_MAG_MIP_LINEAR),"\
+"StaticSampler(s3," \
+	"addressU = TEXTURE_ADDRESS_CLAMP," \
+	"addressV = TEXTURE_ADDRESS_CLAMP," \
+	"addressW = TEXTURE_ADDRESS_CLAMP," \
+	"filter = FILTER_MIN_MAG_LINEAR_MIP_POINT)"
 
 struct Light {
 	float4 Location;
@@ -60,3 +70,5 @@ Texture2D gShadowMap : register(t2);
 
 SamplerState gSamplerWrap : register(s0);
 SamplerComparisonState gSamShadow : register(s1);
+SamplerState gSamLinearWrap	: register(s2);
+SamplerState gSamBloom	: register(s3);

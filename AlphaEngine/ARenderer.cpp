@@ -44,7 +44,7 @@ void ARenderer::Render()
 	ShadowPass();
 	BasePass(1, "Base");
 
-	HDRPass();
+	//HDRPass();
 	
 	mRHI->ExecuteCommandLists();
 }
@@ -70,6 +70,7 @@ void ARenderer::RenderStart()
 	{
 		mRHI->CreateCbHeapsAndSrv(actorPair.first, actorPair.second->StaticMeshNames[0], mRenderScene->mRenderItem[actorPair.first].get(), mShadowResource.get(), mHDRResource.get(), mRenderScene);
 	}
+	mRHI->CreateCbHeapsAndSrv("HDRTriangle", "HDRTriangle", mRenderScene->HDRTriangle.get(), mShadowResource.get(), mHDRResource.get(), mRenderScene);
 	mRHI->ExecuteCommandLists();
 }
 
