@@ -145,11 +145,11 @@ void ARHIDX12::Update(int CBIndex, std::shared_ptr<ARenderScene> RenderScene, AR
 	objConstants.Rotation = renderItem->mRotation;
 	objConstants.LightVP = RenderScene->LightVP;
 	objConstants.TLightVP = RenderScene->TLightVP;
-	//objConstants.Time = AEngine::GetSingleton().GetTotalTime();
 	objConstants.directionalLight.Location = AEngine::GetSingleton().GetScene()->DirectionalLight.Location;
 	objConstants.directionalLight.Direction = RenderScene->LightDirection;
 	objConstants.directionalLight.Brightness = AEngine::GetSingleton().GetScene()->DirectionalLight.Brightness;
 	objConstants.CameraLoc = mCameraLoc;
+	objConstants.Time = AEngine::GetSingleton().GetTotalTime();
 	mObjectCB->CopyData(CBIndex, objConstants);
 }
 
@@ -537,7 +537,7 @@ void ARHIDX12::BuildShaderResourceView(const std::string& ActorName, ARenderItem
 			CD3DX12_CPU_DESCRIPTOR_HANDLE(srvCpuStart, ++mHeapIndex, mCbvSrvUavDescriptorSize),
 			CD3DX12_CPU_DESCRIPTOR_HANDLE(dsvCpuStart, 2, mDsvDescriptorSize),
 			CD3DX12_CPU_DESCRIPTOR_HANDLE(rtvCpuStart, i + 2, mRtvDescriptorSize),
-			i, static_cast<int>(1920* scale), static_cast<int>(1080 * scale));
+			i, static_cast<int>(1920 * scale), static_cast<int>(1080 * scale));
 
 		RenderItem->ObjRtvIndex.push_back(mHeapIndex);
 	}
@@ -675,18 +675,41 @@ void ARHIDX12::SetGraphicsRootDescriptorTable(ARenderItem* renderItem, bool isDe
 
 	auto handle = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
 	handle.Offset(renderItem->mCBHeapIndex, mCbvSrvUavDescriptorSize);
-	mCommandList->SetGraphicsRootDescriptorTable(1,handle);
+	mCommandList->SetGraphicsRootDescriptorTable(1, handle);
 	if (!isDepth)
 	{
 		auto handle2 = CD3DX12_GPU_DESCRIPTOR_HANDLE(mCbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
 		handle2.Offset(renderItem->mSrvCBIndex, mCbvSrvUavDescriptorSize);
-		mCommandList->SetGraphicsRootDescriptorTable(2,handle2);
+		mCommandList->SetGraphicsRootDescriptorTable(2, handle2);
+	}
+	if (isNeedRTV)
+	{
+		for (int i = 0; i < RTVNumber; i++)
+		{
+			int currentRTVNumber = 0;
+			CD3DX12_GPU_DESCRIPTOR_HANDLE hDescriptor3(mCbvSrvHeap->GetGPUDescriptorHandleForHeapStart());
+			hDescriptor3.Offset(renderItem->ObjRtvIndex[i], md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV));
+			currentRTVNumber = i;
+			if (i < 4) {
+				currentRTVNumber = glm::min(RTVNumber, 4) - i;
+				if (RTVNumber > 4 && i != 3) {
+					currentRTVNumber--;
+				}
+			}
+			else if (i >= 4) {
+				currentRTVNumber = 1;
+			}
+			if (i == 0 || i > 5) {
+				currentRTVNumber = 0;
+			}
+			mCommandList->SetGraphicsRootDescriptorTable(currentRTVNumber + 3, hDescriptor3);
+		}
 	}
 }
 
 void ARHIDX12::SetGraphicsRoot32BitConstants(int Width, int Height)
 {
-	int renderTargetSize[2] = {  Width,Height };
+	int renderTargetSize[2] = { Width,Height };
 	mCommandList->SetGraphicsRoot32BitConstants(0, 2, &renderTargetSize, 0);
 }
 
@@ -776,7 +799,7 @@ void ARHIDX12::RenderFrameBegin(std::shared_ptr<ARenderScene> renderResource, co
 void ARHIDX12::CreateCbHeapsAndSrv(const std::string& ActorName, const std::string& MeshName, ARenderItem* RenderItem, ARenderResource* shadowResource, ARenderResource* HDRResource, std::shared_ptr<ARenderScene> RenderScene)
 {
 	BuildConstantBuffers(RenderItem);
-	BuildShaderResourceView(ActorName, RenderItem, MeshName, shadowResource,HDRResource, RenderScene);
+	BuildShaderResourceView(ActorName, RenderItem, MeshName, shadowResource, HDRResource, RenderScene);
 }
 
 void ARHIDX12::ResetCommand(const std::string& PSOName)

@@ -10,7 +10,7 @@ struct VertexOut
 	float4 PosH  : SV_POSITION;
 };
 
-[RootSignature(FuChenSample_BloomSig)]
+[RootSignature(Common_RootSig)]
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
@@ -18,6 +18,7 @@ VertexOut VS(VertexIn vin)
 	return vout;
 }
 
+[RootSignature(Common_RootSig)]
 float4 PS(VertexOut pin) : SV_Target
 {
 	int X = floor(pin.PosH.x);

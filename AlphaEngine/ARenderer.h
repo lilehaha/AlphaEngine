@@ -18,6 +18,9 @@ public:
 	void BasePass(int RTVNumber, const std::string& PSOName);
 	void ShadowPass();
 	void HDRPass();
+	void BloomPass(int& postProcessCount);
+	void ToneMapPass(int RTVNumber, const std::string& PSOName);
+	void PostProcessPass(int& index, const std::string& PSOName);
 private:
 	std::unique_ptr<RHIBuilder> mRHIBuilder;
 	std::shared_ptr<ARHI> mRHI;

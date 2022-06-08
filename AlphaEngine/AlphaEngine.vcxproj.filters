@@ -333,5 +333,8 @@
     <None Include="Shaders\ToneMapping.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\Glitch.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

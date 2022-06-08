@@ -87,9 +87,9 @@ struct ObjectConstants
 	glm::mat4x4 TexTransform = glm::identity<glm::mat4x4>();
 	glm::mat4x4 LightVP = glm::identity<glm::mat4x4>();
 	glm::mat4x4 TLightVP = glm::identity<glm::mat4x4>();
-	//float Time;
 	LightT directionalLight;
 	glm::vec3 CameraLoc;
+	float Time;
 };
 
 struct MatConstants

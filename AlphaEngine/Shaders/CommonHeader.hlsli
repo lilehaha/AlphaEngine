@@ -3,6 +3,10 @@
 "RootConstants(b0, num32BitConstants = 4),"\
 "DescriptorTable(CBV(b1,numDescriptors = 2), visibility = SHADER_VISIBILITY_ALL),"\
 "DescriptorTable(SRV(t0,numDescriptors = 3), visibility = SHADER_VISIBILITY_PIXEL),"\
+"DescriptorTable(SRV(t3,numDescriptors = 1), visibility = SHADER_VISIBILITY_PIXEL),"\
+"DescriptorTable(SRV(t4,numDescriptors = 1), visibility = SHADER_VISIBILITY_PIXEL),"\
+"DescriptorTable(SRV(t5,numDescriptors = 1), visibility = SHADER_VISIBILITY_PIXEL),"\
+"DescriptorTable(SRV(t6,numDescriptors = 1), visibility = SHADER_VISIBILITY_PIXEL),"\
 "StaticSampler(s0," \
 	"addressU = TEXTURE_ADDRESS_WRAP," \
 	"addressV = TEXTURE_ADDRESS_WRAP," \
@@ -51,9 +55,9 @@ cbuffer cbPerObject : register(b1)
 	float4x4 gTexTransform;
 	float4x4 gLightVP;
 	float4x4 gTLightVP;
-//	float gTime;
 	Light light;
 	float3 CameraLoc;
+	float gTime;
 };
 
 cbuffer cbMat : register(b2)
@@ -67,6 +71,10 @@ cbuffer cbMat : register(b2)
 Texture2D gDiffuseMap : register(t0);
 Texture2D gNormalMap : register(t1);
 Texture2D gShadowMap : register(t2);
+Texture2D gBloomMap : register(t3);
+Texture2D gBloomDown : register(t4);
+Texture2D gBloomDown2 : register(t5);
+Texture2D gBloomUp : register(t6);
 
 SamplerState gSamplerWrap : register(s0);
 SamplerComparisonState gSamShadow : register(s1);

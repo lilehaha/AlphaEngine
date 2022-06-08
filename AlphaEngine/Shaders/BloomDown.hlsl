@@ -27,7 +27,7 @@ VertexOut VS(VertexIn vin)
 [RootSignature(Common_RootSig)]
 float4 PS(VertexOut pin) : SV_Target
 {
-		float BloomDownScale = 1.35f;
+	float BloomDownScale = 1.35f;
 
 	int X = floor(pin.PosH.x);
 	int Y = floor(pin.PosH.y);
@@ -48,10 +48,10 @@ float4 PS(VertexOut pin) : SV_Target
 	float DoubleRadias = 8.0f;
 	float StartRaduas = 2.0f / DoubleRadias;
 	float4 Colors[8];
-	float4 Color = gBloomInput.Sample(gBloomInputSampler, Tex);
+	float4 Color = gBloomDown.Sample(gSamBloom, Tex);
 	for (int i = 0; i < DoubleRadias; i++)
 	{
-		Colors[i] = gBloomInput.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, DoubleRadias, float(i)));
+		Colors[i] = gBloomDown.Sample(gSamBloom, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, DoubleRadias, float(i)));
 		Color = Color + Colors[i];
 	}
 
@@ -59,4 +59,40 @@ float4 PS(VertexOut pin) : SV_Target
 	Color = Weight * Color;
 
 	return Color;
+	/*float DeltaU = 1.0f / RenderTargetSize[2];
+	float DeltaV = 1.0f / RenderTargetSize[3];
+	float2 DeltaUV = float2(DeltaU, DeltaV);
+	float Width = RenderTargetSize[2];
+	float Height = RenderTargetSize[3];
+	int X = floor(pin.PosH.x);
+	int Y = floor(pin.PosH.y);
+	float BloomDownScale = 2.5f;
+	float2 Tex;
+	Tex.x = 1.0f * X / Width;
+	Tex.y = 1.0f * Y / Height;
+	float StartRaduas = 2.0f / 14.0f;
+	float4 Color0 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 0.0f));
+	float4 Color1 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 1.0f));
+	float4 Color2 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 2.0f));
+	float4 Color3 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 3.0f));
+	float4 Color4 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 4.0f));
+	float4 Color5 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 5.0f));
+	float4 Color6 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 6.0f));
+	float4 Color7 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 7.0f));
+	float4 Color8 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 8.0f));
+	float4 Color9 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 9.0f));
+	float4 Color10 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 10.0f));
+	float4 Color11 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 11.0f));
+	float4 Color12 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 12.0f));
+	float4 Color13 = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomDownScale * Circle(StartRaduas, 14.0f, 13.0f));
+
+	float4 Color = gBloomDown.Sample(gBloomInputSampler, Tex);
+
+	float Weight = 1.0f / 15.0f;
+
+	Color = Weight * (Color + Color0 + Color1 + Color2 + Color3
+		+ Color4 + Color5 + Color6 + Color7
+		+ Color8 + Color9 + Color10 + Color11 + Color12 + Color13);
+
+	return Color;*/
 }

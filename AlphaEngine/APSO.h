@@ -7,7 +7,13 @@ enum class E_PSOType
 {
 	Base = 0,
 	Shadow = 1,
-	Bloom = 2
+	Bloom = 2,
+	BloomSetup = 3,
+	BloomUp = 4,
+	BloomDown = 5,
+	BloomSunMerge = 6,
+	ToneMapping = 7,
+	Glitch = 8
 };
 
 enum INPUT_CLASSIFICATION
@@ -43,6 +49,12 @@ public:
 	APSO BuildBasePSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
 	APSO BuildShadowPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
 	APSO BuildBloomPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
+	APSO BuildBloomSetupPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
+	APSO BuildBloomUpPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
+	APSO BuildBloomDownPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
+	APSO BuildBloomSunMergePSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
+	APSO BuildToneMappingPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
+	APSO BuildGlitchPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
 private:
 	std::unordered_map<E_PSOType, APSO> mPSOs;
 	APSO mPso;

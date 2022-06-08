@@ -16,7 +16,7 @@ float2 Circle(float Start, float Points, float Point)
 	return float2(cos(Radians), sin(Radians));
 }
 
-[RootSignature(FuChenSample_BloomSig)]
+[RootSignature(Common_RootSig)]
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
@@ -24,12 +24,13 @@ VertexOut VS(VertexIn vin)
 	return vout;
 }
 
+[RootSignature(Common_RootSig)]
 float4 PS(VertexOut pin) : SV_Target
 {
 	float4 OutColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-	float BloomWeightScalar = 1.0f / RenderTargetSize[2];
-	float BloomWeightScalar1 = 1.0f / RenderTargetSize[3];
+	float BloomWeightScalar = 1.0f / RenderTargetSize[0];
+	float BloomWeightScalar1 = 1.0f / RenderTargetSize[1];
 
 	float BloomUpScale = 1.0f;
 
@@ -52,11 +53,11 @@ float4 PS(VertexOut pin) : SV_Target
 	float4 ColorDownTotal;
 	for (int i = 0; i < StartDinominator; i++)
 	{
-		ColorsUp[i] = gBloomUp.Sample(gBloomInputSampler, Tex + DeltaUV * BloomUpScale * Circle(Start, StartDinominator, (float)i));
-		ColorsDown[i] = gBloomDown.Sample(gBloomInputSampler, Tex + DeltaUV * BloomUpScale * Circle(Start, StartDinominator, (float)i));
+		ColorsUp[i] = gBloomUp.Sample(gSamBloom, Tex + DeltaUV * BloomUpScale * Circle(Start, StartDinominator, (float)i));
+		ColorsDown[i] = gBloomDown.Sample(gSamBloom, Tex + DeltaUV * BloomUpScale * Circle(Start, StartDinominator, (float)i));
 	}
-	ColorUpTotal = gBloomUp.Sample(gBloomInputSampler, Tex);
-	ColorDownTotal = gBloomDown.Sample(gBloomInputSampler, Tex);
+	ColorUpTotal = gBloomUp.Sample(gSamBloom, Tex);
+	ColorDownTotal = gBloomDown.Sample(gSamBloom, Tex);
 
 	float4 BloomWight = float4(BloomWeightScalar, BloomWeightScalar, BloomWeightScalar, 0.0f);
 	float4 BloomWight1 = float4(BloomWeightScalar1, BloomWeightScalar1, BloomWeightScalar1, 0.0f);

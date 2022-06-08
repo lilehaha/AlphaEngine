@@ -41,11 +41,16 @@ void ARenderer::Render()
 		mRHI->Update(actorIndex,mRenderScene, mRenderScene->mRenderItem[actorPair.first].get());
 		actorIndex++;
 	}
+	mRHI->Update(actorIndex, mRenderScene, mRenderScene->HDRTriangle.get());
 	ShadowPass();
-	BasePass(1, "Base");
+	//BasePass(0, "Base");
 
-	//HDRPass();
-	
+	int postProcessCount = 1;
+	HDRPass();
+	BloomPass(postProcessCount);
+	PostProcessPass(postProcessCount, "ToneMapping");
+	ToneMapPass(postProcessCount, "Glitch");
+
 	mRHI->ExecuteCommandLists();
 }
 
@@ -191,5 +196,49 @@ void ARenderer::HDRPass()
 		mRHI->Draw(RenderItem.second, RenderItem.first, false, false, 0, 1920, 1080);
 	}
 	mRHI->ResourceBarrier(1, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->GetRTVResource(0), RESOURCE_STATES::RENDER_TARGET, RESOURCE_STATES::COMMON);
+	mRHI->EndEvent();
+}
+
+void ARenderer::BloomPass(int& postProcessCount)
+{
+	PostProcessPass(postProcessCount, "BloomSetup");
+	PostProcessPass(postProcessCount, "BloomDown");
+	PostProcessPass(postProcessCount, "BloomDown");
+	PostProcessPass(postProcessCount, "BloomUp");
+	PostProcessPass(postProcessCount, "BloomSunMerge");
+}
+
+void ARenderer::ToneMapPass(int RTVNumber, const std::string& PSOName)
+{
+	mRHI->BeginEvent(PSOName);
+	mRHI->RSSetViewports(0.0f, 0.0f, (float)AEngine::GetSingleton().GetWindow()->GetWidth(), (float)AEngine::GetSingleton().GetWindow()->GetHeight(), 0.0f, 1.0f);
+	mRHI->RSSetScissorRects(0, 0, (long)AEngine::GetSingleton().GetWindow()->GetWidth(), (long)AEngine::GetSingleton().GetWindow()->GetHeight());
+	mRHI->ResourceBarrier(1, mRHIResource->BackBuffer(), RESOURCE_STATES::PRESENT, RESOURCE_STATES::RENDER_TARGET);
+	mRHI->ClearAndSetRenderTatget(mRHIResource->CurrentBackBufferViewHand(), mRHIResource->CurrentDepthStencilViewHand(),
+		1, mRHIResource->CurrentBackBufferViewHand(), true, mRHIResource->CurrentDepthStencilViewHand());
+
+	mRHI->ChangePSOState(AMaterialManager::GetSingleton().GetMaterial(mRenderScene->HDRTriangle->MatName), AMaterialManager::GetSingleton().GetMaterial(PSOName).mPSO, AMaterialManager::GetSingleton().GetMaterial(PSOName).mShaderFilePath);
+	mRHI->SetPipelineState(mRenderScene->HDRTriangle, AMaterialManager::GetSingleton().GetMaterial(PSOName));
+
+	mRHI->Draw(mRenderScene->HDRTriangle, "HDRTriangle", false, true, RTVNumber, 1920, 1080);
+	mRHI->ResourceBarrier(1, mRHIResource->BackBuffer(), RESOURCE_STATES::RENDER_TARGET, RESOURCE_STATES::PRESENT);
+	mRHI->EndEvent();
+}
+
+void ARenderer::PostProcessPass(int& index, const std::string& PSOName)
+{
+	mRHI->BeginEvent(PSOName);
+	mRHI->RSSetViewports(0.0f, 0.0f, (float)AEngine::GetSingleton().GetWindow()->GetWidth(), (float)AEngine::GetSingleton().GetWindow()->GetHeight(), 0.0f, 1.0f);
+	mRHI->RSSetScissorRects(0, 0, (long)AEngine::GetSingleton().GetWindow()->GetWidth(), (long)AEngine::GetSingleton().GetWindow()->GetHeight());
+	mRHI->ResourceBarrier(1, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->GetRTVResource(index), RESOURCE_STATES::COMMON, RESOURCE_STATES::RENDER_TARGET);
+	mRHI->ClearAndSetRenderTatget(std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->RTV(index), std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->DSV(index),
+		1, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->RTV(index), true, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->DSV(index));
+	mRHI->ChangePSOState(AMaterialManager::GetSingleton().GetMaterial(mRenderScene->HDRTriangle->MatName), AMaterialManager::GetSingleton().GetMaterial(PSOName).mPSO, AMaterialManager::GetSingleton().GetMaterial(PSOName).mShaderFilePath);
+	mRHI->SetPipelineState(mRenderScene->HDRTriangle, AMaterialManager::GetSingleton().GetMaterial(PSOName));
+
+	mRHI->Draw(mRenderScene->HDRTriangle, "HDRTriangle", false, true, index, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->width[index], std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->height[index]);
+
+	mRHI->ResourceBarrier(1, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->GetRTVResource(index), RESOURCE_STATES::RENDER_TARGET, RESOURCE_STATES::COMMON);
+	index++;
 	mRHI->EndEvent();
 }

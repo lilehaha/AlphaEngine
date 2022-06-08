@@ -21,7 +21,7 @@ float3 ACESToneMapping(float3 color, float adapted_lum)
 	return (color * (A * color + B)) / (color * (C * color + D) + E);
 }
 
-[RootSignature(FuChenSample_BloomSig)]
+[RootSignature(Common_RootSig)]
 VertexOut VS(VertexIn vin)
 {
 	VertexOut vout;
@@ -29,6 +29,7 @@ VertexOut VS(VertexIn vin)
 	return vout;
 }
 
+[RootSignature(Common_RootSig)]
 float4 PS(VertexOut pin) : SV_Target
 {
 	int X = floor(pin.PosH.x);
@@ -37,8 +38,8 @@ float4 PS(VertexOut pin) : SV_Target
 	Tex.x = 1.0f * X / RenderTargetSize[0];
 	Tex.y = 1.0f * Y / RenderTargetSize[1];
 
-	float4 SceneColor = gBloomMap.Sample(gBloomInputSampler, Tex);
-	float4 BloomColor = gBloomDown.Sample(gBloomInputSampler, Tex);
+	float4 SceneColor = gBloomMap.Sample(gSamBloom, Tex);
+	float4 BloomColor = gBloomDown.Sample(gSamBloom, Tex);
 
 	half3 LinearColor = SceneColor.rgb + BloomColor.rgb;
 
