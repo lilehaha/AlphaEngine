@@ -83,7 +83,7 @@ const AMaterial& AMaterialManager::GetMaterial(const std::string& MaterialName)
 		};
 		mMaterial.Name = "BloomUp";
 		mMaterial.mShaderFilePath = L"..\\AlphaEngine\\Shaders\\BloomUp.hlsl";
-		mMaterial.mPSO = mPSOManager->CreatePSO(E_PSOType::BloomSetup, std::move(mInputLayout), AShaderManager::GetSingleton().CompileShader(mMaterial.mShaderFilePath));
+		mMaterial.mPSO = mPSOManager->CreatePSO(E_PSOType::BloomUp, std::move(mInputLayout), AShaderManager::GetSingleton().CompileShader(mMaterial.mShaderFilePath));
 		mMaterialMap["BloomUp"] = mMaterial;
 
 		return mMaterialMap["BloomUp"];

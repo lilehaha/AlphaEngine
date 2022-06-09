@@ -394,7 +394,7 @@ APSO APSOManager::BuildToneMappingPSO(std::vector<INPUT_ELEMENT_DESC> InputLayou
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	psoDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	mPso.Name = "ToneMapping";
 	mPso.PipelineState = psoDesc;

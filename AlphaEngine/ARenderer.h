@@ -29,5 +29,6 @@ private:
 	std::shared_ptr<ARenderResource> mHDRResource = nullptr;
 	std::shared_ptr<ARenderScene> mRenderScene;
 	glm::mat4x4 mWorld;
+	bool bisBloomDown = true;
 };
 

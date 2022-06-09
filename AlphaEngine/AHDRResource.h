@@ -14,6 +14,7 @@ public:
 	int HDRSize = 7;
 	std::vector<int> width;
 	std::vector<int> height;
+	bool bIsBloomDown = false;
 };
 
 class DXHDRResource : public AHDRResource {

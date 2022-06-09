@@ -459,7 +459,6 @@ void ARHIDX12::BuildConstantBuffers(ARenderItem* renderItem)
 	md3dDevice->CreateConstantBufferView(&cbvDesc1, handle);
 
 	mEleIndex++;
-	//mHeapIndex++;
 }
 
 void ARHIDX12::BuildShaderResourceView(const std::string& ActorName, ARenderItem* RenderItem, const std::string& MeshName, ARenderResource* RenderResource, ARenderResource* HDRResource, std::shared_ptr<ARenderScene> RenderScene)
@@ -523,7 +522,7 @@ void ARHIDX12::BuildShaderResourceView(const std::string& ActorName, ARenderItem
 	{
 		float scale = 1.0f;
 
-		if (i >= 1) {
+		if (i >= 1 && dynamic_cast<DXHDRResource*>(HDRResource)->bIsBloomDown) {
 			scale = 0.25 * static_cast<float>(glm::pow(0.5, glm::min(i - 1, 3)));
 		}
 
@@ -709,8 +708,8 @@ void ARHIDX12::SetGraphicsRootDescriptorTable(ARenderItem* renderItem, bool isDe
 
 void ARHIDX12::SetGraphicsRoot32BitConstants(int Width, int Height)
 {
-	int renderTargetSize[2] = { Width,Height };
-	mCommandList->SetGraphicsRoot32BitConstants(0, 2, &renderTargetSize, 0);
+	int renderTargetSize[4] = { AEngine::GetSingleton().GetWindow()->GetWidth(), AEngine::GetSingleton().GetWindow()->GetHeight(),Width,Height };
+	mCommandList->SetGraphicsRoot32BitConstants(0, 4, &renderTargetSize, 0);
 }
 
 void ARHIDX12::DrawIndexedInstanced(std::shared_ptr<ARenderItem> renderItem, const std::string& Name)

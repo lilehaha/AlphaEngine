@@ -45,7 +45,7 @@ struct Material {
 	float Shininess;
 };
 
-int2 RenderTargetSize : register(b0);
+int4 RenderTargetSize : register(b0);
 
 cbuffer cbPerObject : register(b1)
 {

@@ -74,12 +74,12 @@ float4 PS(VertexOut pin) : SV_Target
 	float4 BloomColor1 = float4(0.5016f, 0.5016f, 0.5016f, 0.0f);
 
 	float2 Tex;
-	Tex.x = 1.0f * X / RenderTargetSize[0];
-	Tex.y = 1.0f * Y / RenderTargetSize[1];
+	Tex.x = 1.0f * X / RenderTargetSize[2];
+	Tex.y = 1.0f * Y / RenderTargetSize[3];
 
 
-	float DeltaU = 1.0f / RenderTargetSize[0];
-	float DeltaV = 1.0f / RenderTargetSize[1];
+	float DeltaU = 1.0f / RenderTargetSize[2];
+	float DeltaV = 1.0f / RenderTargetSize[3];
 	float2 DeltaUV = float2(DeltaU, DeltaV);
 
 	float Start = 2.0f / 6.0f;

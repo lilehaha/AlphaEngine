@@ -47,8 +47,12 @@ void ARenderer::Render()
 
 	int postProcessCount = 1;
 	HDRPass();
-	BloomPass(postProcessCount);
+	if (bisBloomDown)
+	{
+		BloomPass(postProcessCount);
+	}
 	PostProcessPass(postProcessCount, "ToneMapping");
+	//ToneMapPass(postProcessCount, "ToneMapping");
 	ToneMapPass(postProcessCount, "Glitch");
 
 	mRHI->ExecuteCommandLists();
@@ -70,7 +74,7 @@ void ARenderer::RenderStart()
 		mRHI->ChangePSOState(AMaterialManager::GetSingleton().GetMaterial("Shadow"), AMaterialManager::GetSingleton().GetMaterial("Shadow").mPSO, AMaterialManager::GetSingleton().GetMaterial("Shadow").mShaderFilePath);
 		mRHI->SetPipelineState(RenderItem.second, AMaterialManager::GetSingleton().GetMaterial("Shadow"));
 	}
-
+	std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->bIsBloomDown = bisBloomDown;
 	for (auto&& actorPair : AEngine::GetSingleton().GetScene()->GetAllActor())
 	{
 		mRHI->CreateCbHeapsAndSrv(actorPair.first, actorPair.second->StaticMeshNames[0], mRenderScene->mRenderItem[actorPair.first].get(), mShadowResource.get(), mHDRResource.get(), mRenderScene);
