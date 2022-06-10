@@ -11,8 +11,8 @@ APSO& APSOManager::CreatePSO(E_PSOType PSOType, std::vector<INPUT_ELEMENT_DESC> 
 	case E_PSOType::Shadow:
 		mPSOs[PSOType] = BuildShadowPSO(InputLayout, Shader);
 		break;	
-	case E_PSOType::Bloom:
-		mPSOs[PSOType] = BuildBloomPSO(InputLayout, Shader);
+	case E_PSOType::HDR:
+		mPSOs[PSOType] = BuildHDRPSO(InputLayout, Shader);
 		break;
 	case E_PSOType::BloomSetup:
 		mPSOs[PSOType] = BuildBloomSetupPSO(InputLayout, Shader);
@@ -133,7 +133,7 @@ APSO APSOManager::BuildShadowPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AS
 	return APSO();
 }
 
-APSO APSOManager::BuildBloomPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader)
+APSO APSOManager::BuildHDRPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader)
 {
 #ifdef DXRender
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc;
@@ -171,7 +171,7 @@ APSO APSOManager::BuildBloomPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, ASh
 	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 
-	mPso.Name = "Bloom";
+	mPso.Name = "HDR";
 	mPso.PipelineState = psoDesc;
 	return mPso;
 #endif

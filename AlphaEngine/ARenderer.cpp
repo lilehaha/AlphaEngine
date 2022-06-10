@@ -43,7 +43,7 @@ void ARenderer::Render()
 	}
 	mRHI->Update(actorIndex, mRenderScene, mRenderScene->HDRTriangle.get());
 	ShadowPass();
-	//BasePass(0, "Base");
+	BasePass(0, "Base");
 
 	int postProcessCount = 1;
 	HDRPass();
@@ -51,9 +51,12 @@ void ARenderer::Render()
 	{
 		BloomPass(postProcessCount);
 	}
-	PostProcessPass(postProcessCount, "ToneMapping");
-	//ToneMapPass(postProcessCount, "ToneMapping");
-	ToneMapPass(postProcessCount, "Glitch");
+	
+	//PostProcessPass(postProcessCount, "ToneMapping");
+	//ToneMapPass(postProcessCount, "Glitch");
+
+	ToneMapPass(postProcessCount, "ToneMapping");
+	
 
 	mRHI->ExecuteCommandLists();
 }
@@ -195,8 +198,8 @@ void ARenderer::HDRPass()
 		1, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->RTV(0), false, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->DSV(0));
 	for (auto&& RenderItem : mRenderScene->mRenderItem)
 	{
-		mRHI->ChangePSOState(AMaterialManager::GetSingleton().GetMaterial(RenderItem.second->MatName), AMaterialManager::GetSingleton().GetMaterial("Bloom").mPSO, AMaterialManager::GetSingleton().GetMaterial("Bloom").mShaderFilePath);
-		mRHI->SetPipelineState(RenderItem.second, AMaterialManager::GetSingleton().GetMaterial("Bloom"));
+		mRHI->ChangePSOState(AMaterialManager::GetSingleton().GetMaterial(RenderItem.second->MatName), AMaterialManager::GetSingleton().GetMaterial("HDR").mPSO, AMaterialManager::GetSingleton().GetMaterial("HDR").mShaderFilePath);
+		mRHI->SetPipelineState(RenderItem.second, AMaterialManager::GetSingleton().GetMaterial("HDR"));
 		mRHI->Draw(RenderItem.second, RenderItem.first, false, false, 0, 1920, 1080);
 	}
 	mRHI->ResourceBarrier(1, std::dynamic_pointer_cast<AHDRResource>(mHDRResource)->GetRTVResource(0), RESOURCE_STATES::RENDER_TARGET, RESOURCE_STATES::COMMON);

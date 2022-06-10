@@ -7,7 +7,7 @@ enum class E_PSOType
 {
 	Base = 0,
 	Shadow = 1,
-	Bloom = 2,
+	HDR = 2,
 	BloomSetup = 3,
 	BloomUp = 4,
 	BloomDown = 5,
@@ -48,7 +48,7 @@ public:
 	APSO& CreatePSO(E_PSOType PSOType, std::vector<INPUT_ELEMENT_DESC> InputLayout,AShader* Shader);
 	APSO BuildBasePSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
 	APSO BuildShadowPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
-	APSO BuildBloomPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
+	APSO BuildHDRPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
 	APSO BuildBloomSetupPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
 	APSO BuildBloomUpPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
 	APSO BuildBloomDownPSO(std::vector<INPUT_ELEMENT_DESC> InputLayout, AShader* Shader);
